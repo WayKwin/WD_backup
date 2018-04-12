@@ -3,6 +3,8 @@
 #include<readline/readline.h>
 #include<readline/history.h>
 /*#endif*/
+//本来在头文件中 先要转移在proc中
+//原版是用指针 所以不用buf
 extern char buf[256];
 int read_command(char* command[], char *parameters[], char *prompt)
 {
@@ -44,7 +46,7 @@ int read_command(char* command[], char *parameters[], char *prompt)
             buf[i] = '\0';
         }
     }
-#ifdef debug
+#ifdef DEBUG
     printf("read_command debug: \n");
     printf("command[] = ");
     i = 0;
@@ -65,14 +67,16 @@ int read_command(char* command[], char *parameters[], char *prompt)
     printf("parameters numbers: %d\n",parameters_count);
     printf("\n");
 #endif
+    if( command_count  == 0 )
+        return -1;
     return parameters_count;
 }
-#ifdef debug_read_command
+#ifdef DEBUG_READ_COMMAND
 int main()
 {
     char buff[256];
     char* a[100];
-    char *b[100];
+    char* b[100];
     while(1)
     {
         type_prompt(buff);

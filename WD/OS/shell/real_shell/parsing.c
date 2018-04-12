@@ -9,6 +9,8 @@ void parse_info_init(struct parse_info *info)
 }
 int parsing(char** parameters,int parse_num, struct parse_info* info)
 {
+    if(parse_num == 0)
+        return 0;
     if( strcmp( parameters[parse_num - 1], "&" ) == 0)
     {
         info->flag |= BACKGROUND;
@@ -47,48 +49,65 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
             parameters[i] = NULL;
             i += 2;
         }
+        //bug//暂不处理管道
         else if( strcmp(parameters[i], "|") == 0 )
         {
             info->flag |= IS_PIPED;
             //管道后的command 和 parameter2
             info->command2 = parameters[i + 1];
-            info->parameters2 = &parameters[i + 1];
+            if( parameters[i + 2] )
+            info->parameters2 = &parameters[i + 2] ;
+            //跳过指令待定
+            i += 2;
             //unfish
+            //
         }
         else
             i++;
     }
 #ifdef DEBUG
-    printf("\nbackground:%s \n",info->flag&BACKGROUND? "yes" : " NO ");
-    pritnf("in redirect :");
-    intfo->flag & IN_REDIRECT ? printf("yes,in_file:%s\n",info->in_file) : printf("No\n");
-    printf("in redirect append :")
-    intfo->flag & IN_REDIRECT_APPEND ? printf("yes,in_file:%s\n",info->in_file) : printf("No\n");
-    printf("out redirec:")
-    intfo->flag & OUT_REDIRECT? printf("yes,out_file:%s\n",info->out_file) : printf("No\n");
-    printf("out redirect append :")
+    printf("PARSING DEBUG: \n");
+    printf("\nbackground:%s \n",(info->flag & BACKGROUND? "yes" : " NO "));
+    printf("in redirect :");
+    info->flag & IN_REDIRECT ? printf("yes,in_file:%s\n",info->in_file) : printf("No\n");
+    printf("in redirect append :");
+    info->flag & IN_REDIRECT_APPEND ? printf("yes,in_file:%s\n",info->in_file) : printf("No\n");
+    printf("out redirec:");
+    info->flag & OUT_REDIRECT? printf("yes,out_file:%s\n",info->out_file) : printf("No\n");
+    printf("out redirect append :");
     info->flag & OUT_REDIRECT_APPEND ? printf("yes,out_file:%s\n",info->out_file) : printf("No\n");
-    pritnf("pipe :");
+    printf("pipe :");
     if(info->flag & IS_PIPED)
     {
-        printf("yes, command2 : %s\n" ,info->command2)
+        printf("yes, command2 : %s\n" ,info->command2);
         int i = 0;
         printf("parameters2[] :");
-        while(info->parameters2[i++])
+        while(info->parameters2[i])
         {
-            printf("%s",parameters2[i]);
+            printf("%s",info->parameters2[i]);
+            i++;
         }
+
     }
     else
     printf("No\n");
 #endif
+
     return 0;
 }
 #ifdef DEBUG_PARSING
+    struct parse_info info;
+    char buff[256];
+    char* command[100];
+    char* parameters[100];
 int main()
 {
-    char* command[];
-    char* parameters[];
+    while(1)
+    {
+        type_prompt(buff);
+        int ret =  read_command(command,parameters,buff);
+        parsing(parameters,ret, &info);
+    }
 
 }
 #endif
