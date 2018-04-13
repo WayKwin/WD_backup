@@ -7,7 +7,7 @@ void initStack()
 }
 /*
  * o(1)取最小
- *入栈一对元素(value,min)
+ *入栈一对元素(value,min) 记录每次插入的最小值,每次出栈,都能找到最小值
  *注意入栈顺序
  * untest
  */
@@ -95,7 +95,6 @@ void testQueueBy2Stack()
  *  直到head == tail ,把第一个队列元素出队列
  *  push-> 加入到非空队列
 */
-/*=============================================*/
 typedef struct StackBy2Queue
 {
     SeqQueue q1;
@@ -125,7 +124,7 @@ void StackBy2QueuePop(StackBy2Queue* s,SeqQueueType* ret)
         from = &s->q1;
         to = &s->q2;
     }
-    //留下一个等待被pop的yuansu
+    //留下一个等待被pop的元素
     while(from->size != 1)
     {
          SeqQueuePop(from,ret);
@@ -150,9 +149,8 @@ void testStackBy2QueuePop()
 }
 /*==============================*/
 /*
- * 字符串变换入栈合法性 bcd cdb非法  bcd  dcd 合法
- * 只要不相同的部位是局部逆序的 就是合法的 比如 a bc def
- *                                              a cb dfe
+ * 字符串变换入栈合法性 bcd cdb 合法
+ * 相同的部分约去,剩下是逆序的可以约去   直到所有相同的都约去 就是合法
  *
  *    思路:   循环: 在不同元素处一直入栈知道碰到相同元素
  * :           在相同的字符开始循环出栈 双重循环结束后能把栈出空 而且dst 指向末尾 表明可以
@@ -173,7 +171,7 @@ int StackOrder(char src[],size_t src_size,char dst[],size_t dst_size)
     {
         SeqStackPush(&stack,src[src_index]);
         SeqStackTop(&stack,&ret);
-       while ( ret == dst[dst_index])
+        while ( ret == dst[dst_index])
         {
                 dst_index++;
                 SeqStackPop(&stack,NULL);
@@ -181,7 +179,6 @@ int StackOrder(char src[],size_t src_size,char dst[],size_t dst_size)
         }
     }
     //注意有相同的元素 dst_index就++   abcd四个相同 那么就是4 所以和size相等 不是size-1
-
     if(stack.size == 0 && dst_index == dst_size )
     {
         return 1;
