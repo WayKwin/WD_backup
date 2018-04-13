@@ -47,7 +47,7 @@ int main()
         //接收到信号五秒后解除信号block
         if(sigismember(&p,SIGINT))
         {
-            block_cnt++;
+            block_cnt++;;
             printf("%d\n",block_cnt);
             printf("warning!!  you are trying unblocking!!\n");
         }
