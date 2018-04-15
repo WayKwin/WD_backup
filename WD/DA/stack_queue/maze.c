@@ -1,6 +1,9 @@
  #include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
 #define MAX_ROW 6
 #define MAX_COL 6
+
 typedef struct Maze
 {
     int map[MAX_ROW][MAX_COL] ;
@@ -10,12 +13,12 @@ void MazeInit(Maze* maze)
 {
     int map[MAX_ROW][MAX_COL] =
     {
-        { 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0 }
+        { 0, 0, 1, 0, 0, 0 },
+        { 0, 0, 1, 0, 0, 0 },
+        { 1, 1, 1, 1, 1, 1 },
+        { 0, 0, 1, 0, 0, 0 },
+        { 0, 0, 1, 0, 0, 0 },
+        { 0, 0, 1, 0, 0, 0 }
     };
     int i;
     int j;
@@ -39,8 +42,9 @@ void MazePrint(const Maze* maze)
         {
             printf("%2d ",maze->map[i][j]);
         }
-        printf("%d\n");
+        printf("\n");
     }
+        printf("\n");
 }
 //////////////////////////////////////////
 //Round1 递归方式来解决迷宫问题
@@ -51,49 +55,273 @@ typedef struct Point
     int row;
     int col;
 }Point;
-//每次递归都嗲用这个函数
-void _GETPATH(Maze* maze,Point cur,Point entry)
+int  CanStay(Maze* maze, Point cur)
 {
+    if(maze == NULL)
+        return 0;
+    if(cur.row < 0 || cur.row >= MAX_ROW || cur.col < 0 || cur.col >= MAX_COL)
+    {
+        return 0;
+    }
+    //2 3 都能走
     //
-    //深度优先搜索
-    //1 判定cur是否是 1(能落脚)
-    if(canStay(maze,cur))
+    /*if(maze->map[cur.row][cur.col] == 0 && maze->map[cur.row][cur.col] == 2)*/
+    /*{*/
+        /*return 0;*/
+    /*}*/
+    //1能走
+    if(maze->map[cur.row][cur.col] == 1)
     {
-        return;
+        return 1;
     }
-    //2.给当前位置做一个标记( flag = 2 标志走过的路 )
-    Maek(maze,cur);
-    //3.如果当前点是出口,说明找到一条路,探测结束.
-    if(IsEixt(maze,cur))
-    {
-        //找到出路
-        printf("找到一条路径\n");
-        return;
-    }
+    return 0;
 }
-    //4.如果不是出口,就按照顺时针探测四个相邻的点,递归调用函数自身,
-    //递归时更新cur点
-    //每次递归时 点都是下一次要走的点,这个点是否能走交给递归函数.
+void Mark(Maze* maze, Point cur)
+{
+    maze->map[cur.row][cur.col] = 3;
+}
+int  IsExit(Maze* maze, Point cur, Point entry )
+{
+    //出口就是入口
+    if(( cur.row == entry.row ) && (cur.col == entry.col))
+        return 0;
+    if(cur.row == 0 || cur.col == 0 || cur.row == MAX_ROW - 1 || cur.col == MAX_COL - 1)
+        return 1;
+    else
+        return 0;
 
-    //每个点应该有个rightpath 标记位 = 3;
-    //当点进入0, rightpath = 2 出栈
-    //每个点的 0 2 3 都不走
-    //最后遍历整个迷宫 1 的点 找到路径
+}
+int   _GETPATH(Maze* maze,Point cur,Point entry)
+{
+    int flag = 0;
+        //就像最长子序列 ,递归无法获得轨迹
+        //因为返回值就一个
+      // n-1 只能获得 n的一个状态(之后会被覆盖)
+        //实际上是把能走1的都走完,是一种遍历
+    if(!CanStay(maze,cur))
+    {
+        return  0;
+    }
 
+    Mark(maze,cur);
 
+    if(IsExit(maze,cur,entry))
+    {
+        maze->map[cur.row][cur.col] = 2;
+
+        printf("找到一条路径\n");
+        return 1;
+    }
+
+     Point p;
+     p.row = cur.row - 1;
+     p.col = cur.col;
+     _GETPATH(maze, p, entry);
+
+     flag = _GETPATH(maze, p, entry);
+
+     p.row = cur.row;
+     p.col = cur.col + 1;
+
+     flag = _GETPATH(maze, p, entry);
+
+     p.row = cur.row + 1;
+     p.col = cur.col ;
+     flag = _GETPATH(maze, p, entry);
+
+     p.row = cur.row;
+     p.col = cur.col - 1;
+     flag = _GETPATH(maze, p, entry);
+
+     return 0;
+
+}
 
 ////////////////////////////////////////
 //Round2 手动记录栈
 ///////////////////////////////////////
-#include"stack.h"
+/*#ifdef Round2*/
+#define MAX_POINTSTACK 100
+typedef struct PointStack
+{
+    Point p[MAX_POINTSTACK];
+    int size;
+}PointStack;
+void PointStackInit(PointStack* ps)
+{
+    ps->size = 0;
+}
+void PointStackPush(PointStack* ps,Point p)
+{
+    if( ps == NULL )
+        return;
+    if(ps->size == MAX_POINTSTACK )
+        return;
+    ps->p[ps->size++] = p;
+}
+void PointStackPop(PointStack* ps,Point* p)
+{
+    if(ps == NULL)
+        return;
+    if(ps->size == 0)
+    {
+        return;
+    }
+    if( p != NULL )
+        *p = ps->p[ps->size--];
+    else
+        ps->p[ps->size--];
+}
+Point* PointStackTop(PointStack*ps)
+{
+    if(ps == NULL)
+        return NULL;
+    if(ps->size == 0)
+    {
+        return NULL;
+    }
+    return ps->p+ps->size - 1;
+}
 
+PointStack ps;
 void GetPathByLoop(Maze* maze, Point entry)
 {
-    //1 创建一个栈,并且初始化,这个站保存着走过的路径
-     if(!CanStay(maze,entry))
-     {
-         return;
-     }
+    PointStackInit(&ps);
+    Point p = entry;
+    PointStackPush(&ps,p);
+    while(PointStackTop(&ps) != NULL)
+    {
+        if(IsExit(maze,p,entry))
+        {
+            break;
+        }
+        p.row -= 1;
+        PointStackPush(&ps,p);
+        if(CanStay(maze,p))
+        {
+            Mark(maze,p);
+            continue;
+        }
+        else
+        {
+            PointStackPop(&ps,NULL);
+            if(PointStackTop(&ps) != NULL)
+            p = *PointStackTop(&ps);
+            else break;
+        }
+
+        p.col += 1;
+        PointStackPush(&ps,p);
+        if(CanStay(maze,p))
+        {
+            Mark(maze,p);
+            continue;
+        }
+        else
+        {
+            PointStackPop(&ps,NULL);
+            if(PointStackTop(&ps) != NULL)
+            p = *PointStackTop(&ps);
+            else break;
+        }
+
+        p.row += 1;
+        PointStackPush(&ps,p);
+        if(CanStay(maze,p))
+        {
+            Mark(maze,p);
+            continue;
+        }
+        else
+        {
+            PointStackPop(&ps,NULL);
+            if(PointStackTop(&ps) != NULL)
+            p = *PointStackTop(&ps);
+            else break;
+        }
+
+        p.col -= 1;
+        PointStackPush(&ps,p);
+        if(CanStay(maze,p))
+        {
+            Mark(maze,p);
+            continue;
+        }
+        else
+        {
+            PointStackPop(&ps,NULL);
+            if(PointStackTop(&ps) != NULL)
+            p = *PointStackTop(&ps);
+            else break;
+        }
+        PointStackPop(&ps,NULL);
+   }
+    //while(canstay ) 遇到exit  循环出栈打印到空,然后继续continue
+    /*while(1)*/
+    /*{*/
+        /*if( (p.row -= 1,  CanStay(maze,p) ))*/
+        /*{*/
+            /*Mark(maze,p);*/
+            /*PointStackPush(&ps,p);*/
+            /*continue;*/
+        /*}*/
+        /*else*/
+        /*{*/
+            /*p.row += 1;*/
+        /*}*/
+        /*if(( p.col += 1 , CanStay(maze,p) ))*/
+        /*{*/
+            /*Mark(maze,p);*/
+            /*PointStackPush(&ps,p);*/
+            /*continue;*/
+        /*}*/
+        /*else*/
+        /*{*/
+            /*p.col -= 1;*/
+        /*}*/
+        /*if((p.row += 1, CanStay(maze,p)))*/
+        /*{*/
+            /*Mark(maze,p);*/
+            /*PointStackPush(&ps,p);*/
+            /*continue;*/
+        /*}*/
+        /*else*/
+        /*{*/
+            /*p.row -= 1;*/
+        /*}*/
+
+
+        /*if(( p.col -= 1 , CanStay(maze,p) ))*/
+        /*{*/
+            /*Mark(maze,p);*/
+            /*PointStackPush(&ps,p);*/
+            /*continue;*/
+         /*}*/
+        /*else*/
+        /*{*/
+            /*p.col += 1;*/
+        /*}*/
+        /*if( PointStackTop(&ps) == NULL)*/
+        /*{*/
+            /*break;*/
+        /*}*/
+        /*if(IsExit(maze,*PointStackTop(&ps),p))*/
+        /*{*/
+            /*break;*/
+        /*}*/
+        /*PointStackPop(&ps,NULL);*/
+     /*}*/
+    MazePrint(maze);
+    Point* ret ;
+    printf("一条路径为: ");
+    while(( ret=PointStackTop(&ps) ) != NULL)
+    {
+
+        printf("(%d,%d) ",ret->row,ret->col);
+        PointStackPop(&ps,NULL);
+    }
+    printf("\n");
+
 
     //2 判定入口能否落脚
     //3 标记入口点,并且入口点入栈
@@ -111,7 +339,15 @@ void GetPathByLoop(Maze* maze, Point entry)
 
 
 }
-void GetPath(Maze* maze, Point entry)
+int main()
 {
-    _GETPATH(maze,entry, entry);
+    Maze maze;
+    Point entry;
+    entry.row = 0;
+    entry.col = 2;
+    MazeInit(&maze);
+    MazePrint(&maze);
+    GetPathByLoop(&maze,entry);
+    MazePrint(&maze);
+    return 0;
 }

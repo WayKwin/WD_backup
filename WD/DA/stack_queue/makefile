@@ -1,5 +1,7 @@
 .PHONEY:clean test
-test:stack_test.c queue.c stack.c
+obj = maze
+src = maze.c
+$(obj):$(src)
 	gcc $^ -o $@ -g
 clean:
 	rm -rf test
