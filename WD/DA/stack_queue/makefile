@@ -2,7 +2,7 @@
 obj = maze
 src = maze.c
 $(obj):$(src)
-	gcc $^ -o $@ -g
+	gcc $^ -o $@ -g -DLOOP
 clean:
 	rm -rf test
 

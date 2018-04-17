@@ -12,4 +12,6 @@ OBJ=model
 SRC=p_c_model.c
 endif
 $(OBJ):$(SRC)
-	gcc  $^ -o $@  -lpthread
+	gcc  $^ -o $@  -lpthread -g
+clean:
+	rm -rf $(src)
