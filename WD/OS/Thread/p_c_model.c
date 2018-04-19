@@ -94,12 +94,17 @@ void* thread_product(void* arg)
         sleep(1);
         pthread_mutex_lock(&product_mutex);
         pthread_mutex_lock(&product_consume_mutex);
+        printf("==============================\n");
+        while(!stack_isEmpty(&demo_stack))
+        {
+            printf("%s said: there still left one product ,i wait\n",who);
+            pthread_cond_wait(&can_product, &product_consume_mutex);
+        }
         int i = rand()%100 + 1;
         printf("%s product %d\n",who,i);
         stack_push(&demo_stack,i);
         pthread_cond_signal(&can_consume);
         /*printf("%s said : send can_consume_signal,then wait can_product signal\n");*/
-        pthread_cond_wait(&can_product, &product_consume_mutex);
         /*printf("%s said:  wait can_product signal successfully\n");*/
         pthread_mutex_unlock(&product_consume_mutex);
         pthread_mutex_unlock(&product_mutex);

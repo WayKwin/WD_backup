@@ -11,7 +11,11 @@ else ifeq ($(ver),p)
 OBJ=model
 SRC=p_c_model.c
 endif
+ifeq ($(ver), c)
+OBJ=condition_wait
+SRC=condition_wait.c
+endif
 $(OBJ):$(SRC)
-	gcc  $^ -o $@  -lpthread -g
+	clang  $^ -o $@  -lpthread -g
 clean:
 	rm -rf $(src)
