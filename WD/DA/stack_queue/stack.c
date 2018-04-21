@@ -45,7 +45,7 @@ void SeqStackPush(SeqStack* stack,SeqStackType val)
         return;
     if(stack->size >= stack->capacity)
     {
-       if( IncreaseCapacity(stack) == 0 );
+       if( IncreaseCapacity(stack) == 0 )
        return;
     }
     stack->data[stack->size++] = val;

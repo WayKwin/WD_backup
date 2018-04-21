@@ -15,6 +15,10 @@ ifeq ($(ver), c)
 OBJ=condition_wait
 SRC=condition_wait.c
 endif
+ifeq ($(ver), s)
+OBJ=semaphore
+SRC=semaphore_posix.c
+endif
 $(OBJ):$(SRC)
 	clang  $^ -o $@  -lpthread -g
 clean:

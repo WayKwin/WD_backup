@@ -191,8 +191,8 @@ int StackOrder(char src[],size_t src_size,char dst[],size_t dst_size)
 #include<string.h>
 int main()
 {
-    char* src = "abcd";
-    char* dst = "dcba";
+    char* src = "245";
+    char* dst = "425";
     int src_size = strlen(src);
     int dst_size= strlen(dst);
     printf("%d\n",StackOrder(src,src_size,dst,dst_size));

@@ -1,5 +1,4 @@
 #include"tree.h"
-#include<iostream>
 val_t BST::get(key_t key)
 {
 	return get(root, key);
@@ -184,8 +183,21 @@ Node* BST::deleteNode(Node* x,key_t key)
 void BST::deleteNode(key_t key)
 {
     root = deleteNode(root,key);
+} //int  select1(int t)
+void BST:: beforeSearch()
+{
+    std::cout<< "前序遍历为:"<<std::endl;
+    _beforeNode(root);
+    std::cout << std::endl;
 }
-//int  select1(int t)
+void BST::_beforeSearch(Search* node)
+{
+    if(node == NULL)
+        return;
+    std::cout << node->key <<" ";
+    _beforeSearch(node->left);
+    _beforeSearch(node->right);
+}
 //{
 	//Node *x= NULL;
 	//if (x == NULL)
@@ -209,7 +221,7 @@ void BST::deleteNode(key_t key)
 	//}
     //return -1;
 //}
-void BST::show()
-{
+//void BST::show()
+//{
 
-}
+//}

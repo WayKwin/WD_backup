@@ -25,6 +25,9 @@ private:
     Node* deleteMin(Node*);
     Node* deleteNode(Node* x, key_t key);
     Node* findMin(Node*);
+    void _beforeNode(Node* node );
+    void _middleSearch(Node* node);
+    void _afterSearch(Node* node);
 public:
     void deleteMin();
     BST():root(NULL){};
@@ -34,6 +37,9 @@ public:
 	void put(key_t key, val_t val);
     key_t select(int rank);
     void deleteNode(key_t key);
+    void beforeSearch();
+    void middleSearch();
+    void afterSearch();
     int isEmpty()
     {
         return root == NULL? 1:0;
