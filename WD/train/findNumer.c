@@ -29,7 +29,7 @@ void findMulNumber(int *a,int len)
 }
 int main()
 {
-    int array[5] = { 4, 3, 0, 2, 1 };
+    int array[5] = { 4, 3, 1, 2, 1 };
     findMulNumber(array,sizeof(array)/sizeof(array[0]));
     return 0;
 }

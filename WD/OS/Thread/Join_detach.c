@@ -18,6 +18,7 @@ void* pthread_fun1(void* arg)
 void* pthread_fun2(void* arg)
 {
     //分离进程2
+    //分离进程最好在函数内 否则 该函数执行完才执行分离会错误
     pthread_detach(pthread_self());
 
     pthread_t* thread_id = (pthread_t* )arg;
@@ -34,7 +35,6 @@ int main()
 {
     pthread_t main_thread, thread1,thread2;
     pthread_create(&thread1,NULL,pthread_fun1,(void *) &thread1);
-
     pthread_create(&thread2,NULL,pthread_fun2,(void *) &thread2);
     main_thread = pthread_self();
     while(1)

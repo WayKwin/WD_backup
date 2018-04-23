@@ -27,7 +27,8 @@ unsigned short consume_id = 0;
 sem_t g_sem_full;
 sem_t g_sem_empty;
 pthread_mutex_t g_mutex;
-
+pthread_mutex_t producer_mutex;
+pthread_mutex_t consumer_mutex;
 pthread_t g_thread[CONSUMERS_COUNT+PRODUCERS_COUNT];
 void* consume(void* arg)
 {

@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #define max_size
+
 typedef struct _node
 {
     int data;
