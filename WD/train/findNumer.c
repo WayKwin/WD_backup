@@ -27,9 +27,36 @@ void findMulNumber(int *a,int len)
     }
     return;
 }
+int  findMulNumber_version2(int *a, int len)
+{
+    if(a == NULL || len == 1)
+        return -1;
+    int low = 0;
+    int high =  len -1;
+    int cur = 0;
+    int count = 0;
+    while(low <= high)
+    {
+        int mid = low + (high - low) /2;
+        cur = 0;
+        while(cur < len - 1)
+        {
+            if(a[cur++] <= mid)
+                count++;
+        }
+        if( count > mid )
+        {
+            high = mid - 1;
+        }
+        else low = mid + 1 ;
+    }
+    return a[low];
+
+}
 int main()
 {
-    int array[5] = { 4, 3, 1, 2, 1 };
-    findMulNumber(array,sizeof(array)/sizeof(array[0]));
+    int array[5] = {1 , 3, 2, 3,4};
+    int ret = findMulNumber_version2(array,sizeof(array)/sizeof(array[0]));
+    printf("%d\n", ret);
     return 0;
 }

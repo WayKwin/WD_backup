@@ -2,6 +2,7 @@
 #include<stddef.h>
 #include<stdio.h>
 #include"SeqList.h"
+
 #define p printf("\n=========%s==========\n",__FUNCTION__)
 SeqList s;
 void testPushBack()

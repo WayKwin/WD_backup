@@ -6,7 +6,13 @@ int value[] = { 0,7, 9, 1 };
 int weight[] = { 0,3, 2, 1 };
 
 int total_value[item_number + 1][packge_weight + 1] = {0};
-
+int MaxValue(int i , int j)
+{
+    int i,j;
+    if(i <0 || j < 0)
+        return 0;
+   return    total_value[i][j] = Max(total_value[i - 1][j], total_value[i - 1][j - weight[i]] + value[i]);
+}
 int main()
 {
     int i,j;
