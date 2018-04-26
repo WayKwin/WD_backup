@@ -96,7 +96,7 @@ void LevelOrder(treeNode* node)
  *
  */
 // 传指针每次都能改变index,即使return index还是线性增加
-void ConstructTree(treeNode* node,char * str, int * index)
+void ConstructTree(treeNode* node,char * str, int* index)
 {
     if(( str+*index  )== '\000')
     {
@@ -111,9 +111,13 @@ void ConstructTree(treeNode* node,char * str, int * index)
     }
     node->value = *( str + *index );
     node->left = malloc(sizeof(treeNode));
+    if(node->left == NULL)
+        perror("malloc:");
     (*index)++;
     ConstructTree(node->left, str,index);
     node->right = malloc(sizeof(treeNode));
+    if(node->right == NULL)
+        perror("malloc:");
     (*index)++;
     ConstructTree(node->right, str,index);
 }
@@ -125,11 +129,14 @@ treeNode*  _ConstructTree(treeNode* node, char* str, int *index)
     }
     if(*(str+*index ) == '#')
     {
-       treeNode*  new_node = (treeNode*)malloc(sizeof(treeNode));
-        new_node->value = *( str + *index );
-        return new_node;
+        return NULL;
+       /*treeNode*  new_node = (treeNode*)malloc(sizeof(treeNode));*/
+        /*new_node->value = *( str + *index );*/
+        /*return new_node;*/
     }
     node = (treeNode*)malloc(sizeof(treeNode));
+    if(node == NULL)
+        perror("malloc:");
     node->value = *( str + *index );
     (*index)++;
     node->left = _ConstructTree(node->left, str, index);
@@ -150,6 +157,8 @@ treeNode* TreeClone(treeNode* old)
     if(old == NULL)
         return NULL;
     treeNode* node = (treeNode*)malloc(sizeof(treeNode));
+    if(node == NULL)
+        perror("malloc:");
     node->value = old->value;
     node->left = TreeClone(old->left);
     node->right = TreeClone(old->right);
@@ -171,12 +180,77 @@ size_t TreeLeafSize(treeNode* root)
         //递归求树左子树和右子树中 叶子节点
         return TreeLeafSize(root->left) + TreeLeafSize(root->right);
 }
+size_t _TreeKLevelSize(treeNode* root,int k,int deep_count)
+{
+    //应该先判断是否为空
+    //否则空节点会return 1
+    /*if(k == deep_count)*/
+        /*return 1;*/
+    /*else if(root == NULL || deep_count > k)*/
+        /*return 0;*/
+    if(root == NULL || deep_count > k)
+        return 0;
+    if(k == deep_count)
+        return 1;
+     return _TreeKLevelSize(root->left,k,deep_count + 1) + _TreeKLevelSize(root->right,k,deep_count + 1);
+}
+size_t TreeKLevelSize(treeNode* root, int k)
+{
+    if( root == NULL || k ==  0)
+        return -1;
+    int  count = 1;
+    return _TreeKLevelSize(root,k,count);
+}
+// wrong need fix
+size_t TreeHeight(treeNode* root)
+{
+    if(root == NULL)
+        return 0;
+    if(root->left == NULL && root->right == NULL)
+        return 1;
+    return TreeHeight(root->left) > TreeHeight(root->right)? \
+        TreeHeight(root->left) : TreeHeight(root->right);
+}
+
 /*
  *
  *
  *
  *unit test
  */
+void testTreeHeight()
+{
+    HEAD;
+    treeNode* tree;
+    char* pre_str = "ABD##EG###C#F##";
+    int index = 0;
+    tree = _ConstructTree(tree,pre_str, &index);
+    printf("层续遍历结果为\n");
+    LevelOrder(tree);
+    printf("\n");
+    printf("前序遍历结果为\n");
+    PreOrder(tree);
+    printf("\n");
+    size_t ret = TreeHeight(tree);
+    printf("except: 4 actual :%zu\n",ret);
+}
+void testTreeKevelSize()
+{
+    HEAD;
+    treeNode* tree;
+    char* pre_str = "ABD##EG###C#F##";
+    int index = 0;
+    tree = _ConstructTree(tree,pre_str, &index);
+    printf("层续遍历结果为\n");
+    LevelOrder(tree);
+    printf("\n");
+    printf("前序遍历结果为\n");
+    PreOrder(tree);
+    printf("\n");
+
+   size_t ret =  TreeKLevelSize(tree,3);
+   printf(" except:3 actual : %zu \n", ret);
+}
 void testTreeSize()
 {
     HEAD;
@@ -185,7 +259,7 @@ void testTreeSize()
     int index = 0;
     old_tree = _ConstructTree(old_tree,pre_str, &index);
     int  SizeCount = TreeSize(old_tree);
-    printf("excpet:15 actual: %d\n",SizeCount);
+    printf("except:15 actual: %d\n",SizeCount);
 
 }
 void testTreeLeafSize()
@@ -238,9 +312,25 @@ void testLevelOrder()
     PreOrder(node);
     printf("\n");
 }
+void testConstrcutTree()
+{
+    HEAD;
+    char* pre_str = "ABD##EG###C#F##";
+    int index = 0;
+    treeNode* node;
+    //有返回值的递归 因为有回溯的过程 所以必须有人去接应它
+    node = _ConstructTree(node,pre_str,&index );
+    printf("前序遍历结果为\n");
+    PreOrder(node);
+    printf("\n");
+
+}
 int main()
 {
-    testTreeSize();
+    testTreeHeight();
+     /*testTreeKevelSize();*/
+    /*testConstrcutTree();*/
+    /*testTreeSize();*/
     /*testTreeLeafSize();*/
     /*testTreeClone();*/
     /*testLevelOrder();*/
