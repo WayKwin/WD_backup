@@ -201,15 +201,151 @@ size_t TreeKLevelSize(treeNode* root, int k)
     int  count = 1;
     return _TreeKLevelSize(root,k,count);
 }
-// wrong need fix
 size_t TreeHeight(treeNode* root)
 {
+   if(root == NULL)
+       return 0;
+   int left_count = 1 + TreeHeight(root->left);
+   int right_count = 1 + TreeHeight(root->right);
+   return left_count > right_count ? left_count : right_count;
+}
+treeNode* _TreeFind(treeNode* root, treeNodeType to_find)
+{
+    treeNode* to_ret = NULL;
     if(root == NULL)
-        return 0;
-    if(root->left == NULL && root->right == NULL)
-        return 1;
-    return TreeHeight(root->left) > TreeHeight(root->right)? \
-        TreeHeight(root->left) : TreeHeight(root->right);
+        return NULL;
+    if(root->value == to_find)
+        return root;
+    to_ret = _TreeFind(root->left, to_find);
+    if(to_ret == NULL)
+        to_ret = _TreeFind(root->right, to_find);
+    return to_ret;
+}
+treeNode* LChild(treeNode* node)
+{
+    if(node == NULL)
+    {
+        printf("invalid input\n");
+        return NULL;
+    }
+    return node->left;
+}
+treeNode* RChild(treeNode* node)
+{
+    if(node == NULL)
+    {
+        printf("invalid input\n");
+        return NULL;
+    }
+    return node->right;
+}
+treeNode* TreeFind(treeNode* root, treeNodeType to_find)
+{
+    treeNode* node = _TreeFind(root, to_find);
+    return node;
+}
+treeNode* Parent(treeNode* root, treeNode* node)
+{
+    if(root == NULL || node == NULL)
+        return NULL;
+    treeNode* Parent_Node = NULL;
+    if(root->left == node || root->right == node)
+        return root;
+    Parent_Node = Parent(root->left, node);
+    if(Parent_Node == NULL)
+        Parent_Node = Parent(root->right, node);
+    return Parent_Node;
+}
+typedef treeNode*  StackType;
+typedef struct _stack
+{
+    StackType array[MAX_SIZE];
+    size_t base;
+    size_t top;
+}stack;
+void StackInit()
+{
+
+}
+void StackPush(stack* s, StackType key)
+{
+
+}
+StackType StackPop(stack* s)
+{
+    return NULL;
+}
+StackType StackTop(stack* s)
+{
+    return s->array[s->top];
+}
+int StackEmpty(stack* s)
+{
+    if(stack->base == stack->top)
+       return 1;
+    return 0;
+}
+
+void PreOrderByStack(treeNode* root)
+{
+    stack s;
+    if(root == NULL)
+        return;
+    treeNode* cur = root;
+    StackPush(&s, root);
+    while(!StackEmpty ||  cur != NULL)
+    {
+        while(cur != NULL)
+        {
+            printf("%c ",cur->value);
+            StackPush(&s, cur);
+            cur = cur->left;
+        }
+        //发现cur走到NULL 回退一步
+        //因为回退一步已经走过了,所以把其出栈
+        //在看其右子树有没有节点
+        cur = StackTop(&s);
+        StackPop(&s);
+        cur = cur->right;
+
+    }
+}
+void MidOrderByStack(treeNode* root)
+{
+    if(root == NULL)
+    {
+        printf("empty tree\n");
+        return;
+    }
+    stack s;
+    treeNode* cur = root;
+    while(!StackEmpty(&s) && cur != NULL)
+    {
+        while(cur != NULL)
+        {
+            StackPush(&s,cur);
+            cur = cur-> left;
+        }
+        cur = StackTop(&s);
+        printf("%c ", cur->value);
+        StackPop(&s);
+        cur = cur->right;
+    }
+}
+void PostOrderByStack(treeNode* root)
+{
+    stack s;
+    treeNode* cur = root;
+    while(!StackEmpty(&s) && cur != NULL)
+    {
+        while(cur != NULL)
+        {
+            StackPush(&s,cur);
+            cur = cur->left;
+        }
+        cur = StackTop(&s);
+
+    }
 }
 
 /*
@@ -218,6 +354,25 @@ size_t TreeHeight(treeNode* root)
  *
  *unit test
  */
+void testParent()
+{
+    HEAD;
+    treeNode* tree;
+    char* pre_str = "ABD##EG###C#F##";
+    int index = 0;
+    tree = _ConstructTree(tree,pre_str, &index);
+    printf("层续遍历结果为\n");
+    LevelOrder(tree);
+    printf("\n");
+    printf("前序遍历结果为\n");
+    PreOrder(tree);
+    printf("\n");
+    treeNode* ret = Parent(tree, tree->left->right->left);
+    if(ret != NULL)
+        printf("except: E,actual: %c\n", ret->value);
+    else
+        printf("error\n");
+}
 void testTreeHeight()
 {
     HEAD;
@@ -327,7 +482,8 @@ void testConstrcutTree()
 }
 int main()
 {
-    testTreeHeight();
+    testParent();
+    /*testTreeHeight();*/
      /*testTreeKevelSize();*/
     /*testConstrcutTree();*/
     /*testTreeSize();*/
