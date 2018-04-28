@@ -1,17 +1,4 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<stddef.h>
-#define HEAD \
-    do{  \
-     printf("\n----------------%s----------------\n",__FUNCTION__); \
-    }while(0)
-typedef char treeNodeType;
-typedef struct _treeNode{
-
-    struct _treeNode* left;
-    struct _treeNode* right;
-    treeNodeType value;
-}treeNode;
+#include"BinaryTree.h"
 void TreeInit(treeNode** node)
 {
     if(node == NULL)
@@ -20,14 +7,6 @@ void TreeInit(treeNode** node)
     ( *node )->left = NULL;
     ( *node )->right = NULL;
 }
-#define MAX_SIZE 100
-typedef struct _queue
-{
-    treeNode* data[MAX_SIZE];
-    int size;
-    int head;
-    int tail;
-}queue;
 void queueInit(queue* q)
 {
     if(q == NULL)
@@ -152,6 +131,24 @@ void PreOrder(treeNode* node)
     PreOrder(node->left);
     PreOrder(node->right);
 }
+void InOrder(treeNode* node)
+{
+    if( node == NULL )
+        return;
+    InOrder(node->left);
+    printf("%c ",node->value);
+    InOrder(node->right);
+
+}
+void PostOrder(treeNode* node)
+{
+    if( node == NULL )
+        return;
+    PostOrder(node->left);
+    PostOrder(node->right);
+    printf("%c ",node->value);
+
+}
 treeNode* TreeClone(treeNode* old)
 {
     if(old == NULL)
@@ -256,24 +253,33 @@ treeNode* Parent(treeNode* root, treeNode* node)
         Parent_Node = Parent(root->right, node);
     return Parent_Node;
 }
-typedef treeNode*  StackType;
-typedef struct _stack
+void StackInit(stack* s)
 {
-    StackType array[MAX_SIZE];
-    size_t base;
-    size_t top;
-}stack;
-void StackInit()
-{
-
+    if(s == NULL)
+    {
+        printf("invalid input \n");
+        return;
+    }
+    s->top = s->base = 0;
 }
 void StackPush(stack* s, StackType key)
 {
-
+    if(s == NULL)
+        return;
+    s->array[++s->top] = key;
 }
 StackType StackPop(stack* s)
 {
-    return NULL;
+    if(s == NULL)
+        return NULL;
+    if(s->top == s->base)
+        return NULL;
+    if(s->base == s->top)
+    {
+        printf(" empty stack \n");
+        return NULL;
+    }
+    return s->array[s->top--];
 }
 StackType StackTop(stack* s)
 {
@@ -281,7 +287,7 @@ StackType StackTop(stack* s)
 }
 int StackEmpty(stack* s)
 {
-    if(stack->base == stack->top)
+    if(s->base == s->top)
        return 1;
     return 0;
 }
@@ -289,11 +295,11 @@ int StackEmpty(stack* s)
 void PreOrderByStack(treeNode* root)
 {
     stack s;
+    StackInit(&s);
     if(root == NULL)
         return;
     treeNode* cur = root;
-    StackPush(&s, root);
-    while(!StackEmpty ||  cur != NULL)
+    while(!StackEmpty(&s) ||  cur != NULL)
     {
         while(cur != NULL)
         {
@@ -304,13 +310,16 @@ void PreOrderByStack(treeNode* root)
         //发现cur走到NULL 回退一步
         //因为回退一步已经走过了,所以把其出栈
         //在看其右子树有没有节点
-        cur = StackTop(&s);
-        StackPop(&s);
-        cur = cur->right;
+        if(!StackEmpty(&s))
+        {
+            cur = StackTop(&s);
+            StackPop(&s);
+            cur = cur->right;
+        }
 
     }
 }
-void MidOrderByStack(treeNode* root)
+void InOrderByStack(treeNode* root)
 {
     if(root == NULL)
     {
@@ -318,178 +327,157 @@ void MidOrderByStack(treeNode* root)
         return;
     }
     stack s;
+    StackInit(&s);
     treeNode* cur = root;
-    while(!StackEmpty(&s) && cur != NULL)
+    while(!StackEmpty(&s) || cur != NULL)
     {
         while(cur != NULL)
         {
             StackPush(&s,cur);
             cur = cur-> left;
         }
-        cur = StackTop(&s);
-        printf("%c ", cur->value);
-        StackPop(&s);
-        cur = cur->right;
+        if(!StackEmpty(&s))
+        {
+            cur = StackTop(&s);
+            printf("%c ", cur->value);
+            StackPop(&s);
+            cur = cur->right;
+        }
     }
 }
-void PostOrderByStack(treeNode* root)
+#if 1
+void PostOrderByStack_1(treeNode* root)
 {
     stack s;
+    StackInit(&s);
+    int frist_in_top = 0;
     treeNode* cur = root;
-    while(!StackEmpty(&s) && cur != NULL)
+    while(!StackEmpty(&s) || cur != NULL)
     {
         while(cur != NULL)
         {
+            cur->IsFristInStack = 1;
             StackPush(&s,cur);
             cur = cur->left;
         }
-        cur = StackTop(&s);
-
+        if(!StackEmpty(&s))
+        {
+            cur = StackTop(&s);
+            if(cur->IsFristInStack == 1)
+            {
+                cur->IsFristInStack = 0;
+                cur = cur->right;
+            }
+            //走到这表明右子树也走完了
+            else
+            {
+                printf("%c ",cur->value);
+                StackPop(&s);
+                //因为是左右子树都访问完了才打印的根节点,
+                //所以让cur = NULL 避免重复走
+                //当cur = NULL 第一个循环就进不去
+                //而是直接判断栈是否为空
+                cur = NULL;
+            }
+        }
     }
 }
-
-/*
- *
- *
- *
- *unit test
- */
-void testParent()
+#endif
+void PostOrderByStack_2(treeNode* root)
 {
-    HEAD;
-    treeNode* tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    tree = _ConstructTree(tree,pre_str, &index);
-    printf("层续遍历结果为\n");
-    LevelOrder(tree);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(tree);
-    printf("\n");
-    treeNode* ret = Parent(tree, tree->left->right->left);
-    if(ret != NULL)
-        printf("except: E,actual: %c\n", ret->value);
-    else
-        printf("error\n");
+    // 入栈的时候先入根节点,然后入右节点,再入左节点  当出栈的时候就可以后续出栈了
+    // A B C 入栈 A C  B   出栈   B  C  A
+    // 如果 node 左右都为空 打印node 并且出栈
+    // 因为node入栈的顺序 top 先是左子树 然后是右子树 最后是根节点
+    // 如果 node 的左右节点任何一个被被访过了,那么node 也可以出栈 很巧妙
+    if( root == NULL)
+        return ;
+    stack s;
+    StackInit(&s);
+    treeNode* cur ;
+    StackPush(&s, root);
+    //跟踪上次访问的节点
+    treeNode* pre = NULL;
+    while( !StackEmpty(&s))
+    {
+        cur = StackTop(&s);
+        if( ( cur->left == NULL &&  cur->right == NULL ) || \
+            ( ( pre != NULL ) && ( cur->left == pre || cur->right == pre ) ))
+        {
+            printf("%c ",cur->value);
+            //记得能打印的就应该pop
+            StackPop(&s);
+            //记得跟新pre
+            pre = cur;
+        }
+        else
+        {
+            //注意入栈顺序
+            //先右后左
+            if( cur->right != NULL )
+                StackPush(&s,cur->right);
+            if(cur->left != NULL)
+                StackPush(&s, cur->left);
+        }
+    }
 }
-void testTreeHeight()
+void TreeMirror(treeNode* root)
 {
-    HEAD;
-    treeNode* tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    tree = _ConstructTree(tree,pre_str, &index);
-    printf("层续遍历结果为\n");
-    LevelOrder(tree);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(tree);
-    printf("\n");
-    size_t ret = TreeHeight(tree);
-    printf("except: 4 actual :%zu\n",ret);
+    if( root == NULL )
+        return;
+    treeNode* tmp = root->left;
+    root->left = root->right;
+    root->right = tmp;
+    TreeMirror(root->left);
+    TreeMirror(root->right);
 }
-void testTreeKevelSize()
+int IsCompleteTree(treeNode* root)
 {
-    HEAD;
-    treeNode* tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    tree = _ConstructTree(tree,pre_str, &index);
-    printf("层续遍历结果为\n");
-    LevelOrder(tree);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(tree);
-    printf("\n");
-
-   size_t ret =  TreeKLevelSize(tree,3);
-   printf(" except:3 actual : %zu \n", ret);
-}
-void testTreeSize()
-{
-    HEAD;
-    treeNode* old_tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    old_tree = _ConstructTree(old_tree,pre_str, &index);
-    int  SizeCount = TreeSize(old_tree);
-    printf("except:15 actual: %d\n",SizeCount);
-
-}
-void testTreeLeafSize()
-{
-    HEAD;
-    treeNode* old_tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    old_tree = _ConstructTree(old_tree,pre_str, &index);
-    int LeafSize = TreeLeafSize(old_tree);
-    printf("excpet:8 actual: %d\n",LeafSize);
-}
-void testTreeClone()
-{
-    HEAD;
-    treeNode* new_tree;
-    treeNode* old_tree;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    old_tree = _ConstructTree(old_tree,pre_str, &index);
-    printf("旧树 结果为 :\n");
-    printf("层续遍历结果为\n");
-    LevelOrder(old_tree);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(old_tree);
-    printf("\n");
-    new_tree = TreeClone(old_tree);
-    printf("新树 结果为 :\n");
-    printf("层续遍历结果为\n");
-    LevelOrder(new_tree);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(new_tree);
-    printf("\n");
-
-}
-void testLevelOrder()
-{
-    HEAD;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    treeNode* node;
-    //有返回值的递归 因为有回溯的过程 所以必须有人去接应它
-    node = _ConstructTree(node,pre_str,&index );
-    printf("层续遍历结果为\n");
-    LevelOrder(node);
-    printf("\n");
-    printf("前序遍历结果为\n");
-    PreOrder(node);
-    printf("\n");
-}
-void testConstrcutTree()
-{
-    HEAD;
-    char* pre_str = "ABD##EG###C#F##";
-    int index = 0;
-    treeNode* node;
-    //有返回值的递归 因为有回溯的过程 所以必须有人去接应它
-    node = _ConstructTree(node,pre_str,&index );
-    printf("前序遍历结果为\n");
-    PreOrder(node);
-    printf("\n");
-
-}
-int main()
-{
-    testParent();
-    /*testTreeHeight();*/
-     /*testTreeKevelSize();*/
-    /*testConstrcutTree();*/
-    /*testTreeSize();*/
-    /*testTreeLeafSize();*/
-    /*testTreeClone();*/
-    /*testLevelOrder();*/
-    /*HEAD;*/
-    return 0;
+    if(root == NULL)
+        return -1;
+    int SingleChild_flag = 0;
+    int ReachLeaf_flag = 0;
+    queue q;
+    queueInit(&q);
+    queuePush(&q,root);
+    while(queueHead(&q) != NULL)
+    {
+        if( ReachLeaf_flag == 1  )
+        {
+            if(queueHead(&q)->left != NULL || queueHead(&q)-> right != NULL)
+                return 0;
+        }
+        if(SingleChild_flag == 1)
+        {
+            if(queueHead(&q)->right != NULL || queueHead(&q)->left != NULL)
+                return 0;
+        }
+        //只有右节点
+       if(queueHead(&q)->right != NULL && queueHead(&q)->left == NULL)
+           return 0;
+       //只有左节点
+       else if( queueHead(&q)->left != NULL && queueHead(&q)->right == NULL )
+       {
+           SingleChild_flag = 1;
+           ReachLeaf_flag = 1;
+           queuePush(&q,queueHead(&q)->left);
+           queueFront(&q,NULL);
+           continue;
+       }
+       //叶子节点
+       else if(queueHead(&q)->right == NULL && queueHead(&q)->left == NULL)
+       {
+           ReachLeaf_flag = 1;
+           queueFront(&q,NULL);
+           continue;
+       }
+       //有左右节点
+       else
+       {
+           queuePush(&q,queueHead(&q)->left);
+           queuePush(&q,queueHead(&q)->right);
+           queueFront(&q,NULL);
+       }
+    }
+    return 1;
 }

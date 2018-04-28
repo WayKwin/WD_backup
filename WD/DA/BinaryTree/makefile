@@ -2,8 +2,8 @@
 CC=clang
 OBJ=UnitTestBinary
 #SRC=UnitTest_BinaryTree.c BinaryTree.c
-SRC = BinaryTree.c
-FLAGS= -g -D__QUEUE_FOR_TREE__
+SRC = BinaryTree.c UnitTest.c
+FLAGS= -g 
 $(OBJ):$(SRC)
 	$(CC) $(SRC) -o $(OBJ) $(FLAGS)
 clean:
