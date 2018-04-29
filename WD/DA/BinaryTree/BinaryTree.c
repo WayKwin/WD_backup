@@ -283,14 +283,10 @@ StackType StackPop(stack* s)
 }
 StackType StackTop(stack* s)
 {
-    if(s == NULL)
-        return NULL;
     return s->array[s->top];
 }
 int StackEmpty(stack* s)
 {
-    if(s == NULL)
-        return -1;
     if(s->base == s->top)
        return 1;
     return 0;

@@ -14,7 +14,8 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
     if( strcmp( parameters[parse_num - 1], "&" ) == 0)
     {
         info->flag |= BACKGROUND;
-        parameters[ parse_num -1 ] = NULL;
+        // 注意把 & 结束后还得把参数数目 - 1
+        parameters[ --parse_num ] = NULL;
     }
     int i = 0;
     //注意这里for循环不能i++
@@ -87,6 +88,7 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
             printf("%s",info->parameters2[i]);
             i++;
         }
+        printf("\n");
 
     }
     else

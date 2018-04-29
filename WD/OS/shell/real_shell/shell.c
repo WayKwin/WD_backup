@@ -42,29 +42,24 @@ void proc()
                 //此时的fork ? 假设a是bash c_a1是第一次fork用来执行指令的.第二次的fork a会fork出 c_a2, c_a1又会fork出 cc_a1
                 // 应该是 c_a1fork出cc_a1就行了 ?
                 // 加上(chil1 == 0 )?
+                //子进程的子进程
                 if((child2 = fork()) != 0)
                 {
-
-                        //将stdin的文件描述符给管道输出端
-                        //因为stdin已经打开了,所以先关闭stdin
-                        //再将sdin的文件描述符复制,与管道输出端关联
-                        //其实完成了 管道输出端重定向到标准输入
-                        dup2(pipe_fd[0],fileno(stdin) );
-                        close(pipe_fd[1]);
-                        close(pipe_fd[0]);
-                        execvp(info.command2,info.parameters2);
+                    dup2(pipe_fd[0],fileno(stdin) );
+                    close(pipe_fd[1]);
+                    close(pipe_fd[0]);
+                    execvp(info.command2,info.parameters2);
                 }
-                //child1 是管道输入端和stdout关dd联
                 else
                 {
                     close(pipe_fd[0]);
                     close(pipe_fd[1]);
                     waitpid(child2, &status, 0);
-                    /*dup2(pipe_fd[1], fileno(stdout));*/
-                    /*close(pipe_fd[1]);*/
-                    /*close(pipe_fd[0]);*/
-                    /*waitpid*/
                 }
+            }
+            if(info.flag & BACKGROUND)
+            {
+
             }
             execvp(*command,parameters);
         }
@@ -72,7 +67,6 @@ void proc()
         {
 
         }
-        //管道 重定向
 
     }
 }
