@@ -22,7 +22,7 @@ int read_command(char* command[], char *parameters[], char *prompt)
     int i = 0;
     int command_status = 0;
     //当 遇到第一个空格
-    int parameter_status = 1;
+    int parameter_status = 0;
     int command_count = 0;
     int parameters_count = 0;
     /*char argv[256];*/
@@ -35,7 +35,7 @@ int read_command(char* command[], char *parameters[], char *prompt)
             command[command_count++] = buf + i;
             command_status = 1;
         }
-        else if(!isspace(buf[i]) && parameter_status == 0)
+        if(!isspace(buf[i]) && parameter_status == 0)
         {
             parameters[parameters_count++] = buf + i;
             parameter_status = 1;

@@ -22,11 +22,12 @@ int main()
     int pid_1,pid_2;
     pid_1 = fork();
 
-    if( pid_1 == 0 )
+    //父进程
+    if( pid_1 != 0 )
     {
         pid_2 = fork();
-        //子进程2
-        if(pid_2 != 0)
+        //子进程1j
+        if(pid_2 == 0)
         {
             close(fd[1]);
             /*close(0);*/
@@ -34,7 +35,6 @@ int main()
             close(fd[0]);
             execvp("grep",grep);
         }
-        // 父进程
         else
         {
             close(fd[0]);
@@ -42,11 +42,12 @@ int main()
             waitpid(-1, 0, 0);
         }
     }
-    //子进程1
     else
     {
+        //子进程2
         close(fd[0]);
-        /*close(1);*/
+        /*close(fd[1]);*/
+        close(1);
         dup2(fd[1],1);
         close(fd[1]);
         execvp("ps",ps);

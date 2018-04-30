@@ -1,12 +1,15 @@
 .PHONEY:clean
+ver = d
+ifeq ($(ver),d)
 OBJ = parsing
-ver = parsing
-#ifeq($(ver),parsing)
-flag += -DDEBUG  -DDEBUG_PARSING
-#else
-#flag += -DDEBUG -DDEBUG_READ_COMMAND
-#endif
-$(OBJ):read_command.c type_prompt.c parsing.c
-	gcc -o $@ $^  -lreadline -L /usr/lib64/ $(flag) -g
+flag += -DDEBUG  -DDEBUG_PARSING -g
+SRC = read_command.c type_prompt.c parsing.c
+else ifeq ($(ver),r)
+OBJ = shell
+SRC = shell.c read_command.c type_prompt.c parsing.c 
+flag = -g;
+endif
+$(OBJ):
+	gcc  $(SRC) -o $(OBJ)  -lreadline -L /usr/lib64/ $(flag) 
 clean:
 	rm -rf $(OBJ)

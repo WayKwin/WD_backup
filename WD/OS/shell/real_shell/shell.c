@@ -3,7 +3,7 @@ char prompt[MAX_PROMPT];
 struct parse_info info;
 //提示符只是在read_command 函数有用
 char** command = NULL;
-char** parameters;
+char** parameters = NULL;
 //命令和参数有多个函数要用
 void proc()
 {
@@ -20,7 +20,7 @@ void proc()
     pid_t child1,child2;
     while(1)
     {
-        int pipe_fd[2] ,int_fd, out_fd;
+        int pipe_fd[2] ,in_fd, out_fd;
         type_prompt(promopt);
         int para_num = read_command(command,parameters,promopt);
         if( para_num == -1 )
@@ -33,18 +33,14 @@ void proc()
                 perror("pipe falied :");
             }
         }
-        //执行命令子进程
+        //父进程  等会要循环等待的那个
         if( (child1 = fork()) != 0 )
         {
             if(info.flag & IS_PIPED)
             {
-                 //管道 a|b  执行b的子进程
-                //此时的fork ? 假设a是bash c_a1是第一次fork用来执行指令的.第二次的fork a会fork出 c_a2, c_a1又会fork出 cc_a1
-                // 应该是 c_a1fork出cc_a1就行了 ?
-                // 加上(chil1 == 0 )?
-                //子进程的子进程
-                if((child2 = fork()) != 0)
+                if((child2 = fork()) == 0)
                 {
+                    //新的子进程
                     dup2(pipe_fd[0],fileno(stdin) );
                     close(pipe_fd[1]);
                     close(pipe_fd[0]);
@@ -52,6 +48,7 @@ void proc()
                 }
                 else
                 {
+                    //父进程
                     close(pipe_fd[0]);
                     close(pipe_fd[1]);
                     waitpid(child2, &status, 0);
@@ -59,14 +56,83 @@ void proc()
             }
             if(info.flag & BACKGROUND)
             {
-
+                   //TODO
+                printf("todo\n");
+            }
+            else
+            {
+                waitpid(child1, NULL, 0);
+            }
+        }
+        //child == 0
+        else if( child1 == 0 )
+        {
+            if( info.flag & IS_PIPED )
+            {
+                //如果只有管道
+                if(!(info.flag & OUT_REDIRECT) && !(info.flag & OUT_REDIRECT_APPEND))
+                {
+                    close(pipe_fd[0]);
+                    close(fileno(stdout));
+                    dup2(pipe_fd[1],fileno(stdout));
+                    close(pipe_fd[1]);
+                }
+                else//有管道和重定向的情况下关闭管道
+                {
+                    close(pipe_fd[0]);
+                    close(pipe_fd[1]);//发送SISGPIPE破坏管道
+                    if( info.flag & OUT_REDIRECT )
+                    {
+                        out_fd = open(info.out_file, O_WRONLY | O_CREAT | O_TRUNC,0666);
+                    }
+                    else
+                    {
+                        out_fd = open(info.out_file, O_WRONLY | O_APPEND| O_TRUNC,0666);
+                    }
+                    close(fileno(stdout));
+                    dup2(out_fd,fileno(stdout));
+                    close(out_fd);
+                }
+            }
+            //没有管道 的情况
+            else
+            {
+                if(info.flag & OUT_REDIRECT)
+                {
+                    out_fd = open(info.out_file, O_WRONLY | O_CREAT | O_TRUNC,0666);
+                    close(fileno(stdout));
+                    dup2(out_fd,fileno(stdout));
+                    close(out_fd);
+                }
+                if(info.flag & OUT_REDIRECT_APPEND)
+                {
+                    out_fd = open(info.out_file, O_WRONLY | O_APPEND| O_TRUNC,0666);
+                    close(fileno(stdout));
+                    dup2(out_fd,fileno(stdout));
+                    close(out_fd);
+                }
+            }
+            if(info.flag & IN_REDIRECT)
+            {
+                in_fd = open(info.in_file, O_WRONLY | O_CREAT | O_TRUNC,0666);
+                close(fileno(stdin));
+                dup2(in_fd,fileno(stdin));
+                close(in_fd);
+            }
+            if(info.flag & IN_REDIRECT_APPEND)
+            {
+                in_fd = open(info.in_file, O_WRONLY | O_APPEND | O_TRUNC,0666);
+                close(fileno(stdin));
+                dup2(in_fd,fileno(stdin));
+                close(in_fd);
             }
             execvp(*command,parameters);
         }
-        else if(child1 == 0)
-        {
-
-        }
 
     }
+}
+int main()
+{
+    proc();
+    return 0;
 }

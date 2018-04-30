@@ -20,7 +20,7 @@ struct passwd *pwd;
 char promopt[256];
 //输入型参数
 void  type_prompt(char* prompt);
-//此处应该统计parameters (命令)个数
+//此处应该统计command和parameters (命令)个数
 int read_command(char** command, char** parameters, char *prompt);
 //翻译
 int parsing(char** parameters,int parse_num,struct parse_info* info);

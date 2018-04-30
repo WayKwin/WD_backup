@@ -56,10 +56,10 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
             info->flag |= IS_PIPED;
             //管道后的command 和 parameter2
             info->command2 = parameters[i + 1];
-            if( parameters[i + 2] )
-            info->parameters2 = &parameters[i + 2] ;
+            if( parameters[i + 1] )
+            info->parameters2 = &parameters[i + 1] ;
             //跳过指令待定
-            i += 2;
+            i += 1;
             //unfish
             //
         }
