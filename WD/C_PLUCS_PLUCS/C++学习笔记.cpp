@@ -3,31 +3,33 @@
 using namespace::std;
 class Sales_Data
 {
-	//ÉùÃ÷ÓÑÔªº¯Êı(ÕâĞ©¶¨ÒåÔÚÍâ²¿µÄº¯Êı¿ÉÒÔ·ÃÎÊÄÚÖĞprivateĞŞÊÎµÄ³ÉÔ±±äÁ¿ÁË) ps.publicĞŞÊÎË­¶¼¿ÉÒÔ·ÃÎÊ
-	//ÓÑÔªº¯ÊıÔÚÀàÍâ»¹ÒªÖØĞÂÉùÃ÷ Ò»´Î,Õâ´Î½öÊÇÉùÃ÷ÕâĞ©º¯ÊıÊÇ"ÓÑÔª"
+    //¿¿¿¿¿¿(¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿provate¿¿¿¿¿¿¿¿)
+    //¿¿
+    //¿¿ public¿¿¿¿¿¿¿¿
+    //¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿, ¿¿¿¿¿¿¿¿ "friend"
 	friend Sales_Data add(const Sales_Data&, const Sales_Data&);
 	friend ostream& print(ostream&, const Sales_Data&);
 	friend istream& read(istream&, Sales_Data&);
 public:
-	//¹¹Ôìº¯Êı
+    //constructer
 	Sales_Data(const string&s, unsigned n, double p) ;
 	Sales_Data(std::istream &is);
 	Sales_Data();
-	//³ÉÔ±º¯Êı
+    //member function
 	string isbn()const { return this->bookNo; };
 	Sales_Data& combine(const Sales_Data&);
 private:
 	double avg_price()const;
-	//³ÉÔ±±äÁ¿
+    //¿¿¿¿
 	string bookNo;
 	unsigned units_sold = 0;
 	double revenue = 0.0;
 };
-//¹¹Ôìº¯Êı ,ÔÚÀàÍâ¶¨Òå¹¹Ôì¼ÇµÃÔÚÀàÖĞÉùÃ÷
+//¿¿¿¿
 Sales_Data::Sales_Data() = default;
 Sales_Data::Sales_Data(const string&s, unsigned n, double p) :bookNo(s), units_sold(n), revenue(p*n){};
 Sales_Data::Sales_Data(std::istream &is)  { read(is, *this); }
-// ½Ó¿Úº¯Êı
+//¿¿¿¿
 Sales_Data add(const Sales_Data&, const Sales_Data&);
 ostream& print(ostream&, const Sales_Data&);
 istream& read(istream&,  Sales_Data&);
@@ -61,5 +63,5 @@ istream& read(istream &is, Sales_Data &item)
 }
 ostream& print(ostream& os, const Sales_Data &item)
 {
-
+   return NULL;
 }

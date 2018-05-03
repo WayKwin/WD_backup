@@ -126,6 +126,13 @@ void proc()
                 dup2(in_fd,fileno(stdin));
                 close(in_fd);
             }
+            printf("parameters[] : ");
+            while(*parameters)
+            {
+                printf("%s ",parameters);
+                parameters++;
+            }
+            printf("\n");
             execvp(*command,parameters);
         }
 

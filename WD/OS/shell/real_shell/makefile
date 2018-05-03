@@ -1,4 +1,4 @@
-.PHONEY:clean
+.PHONEY:clean make
 ver = d
 ifeq ($(ver),d)
 OBJ = parsing

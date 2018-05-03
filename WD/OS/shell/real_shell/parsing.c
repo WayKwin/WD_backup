@@ -11,6 +11,7 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
 {
     if(parse_num == 0)
         return 0;
+    parse_info_init(info);
     if( strcmp( parameters[parse_num - 1], "&" ) == 0)
     {
         info->flag |= BACKGROUND;
