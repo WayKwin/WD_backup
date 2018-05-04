@@ -195,8 +195,11 @@ size_t TreeKLevelSize(treeNode* root, int k)
 {
     if( root == NULL || k ==  0)
         return -1;
-    int  count = 1;
-    return _TreeKLevelSize(root,k,count);
+    if(root == NULL || k < 0)
+        return 0;
+    if( k == 1 )
+        return 1;
+    return TreeKLevelSize(root,k - 1) + TreeKLevelSize(root, k - 1);
 }
 size_t TreeHeight(treeNode* root)
 {

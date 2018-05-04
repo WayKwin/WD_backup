@@ -99,7 +99,7 @@ int BinarySearch_3(int *a,int length,int key)
 }
 int main()
 {
-    int array[] = {1,2,3,3,3,4,5};
+    int array[] = {1,2,3,3,3,4,5};00
     int length = sizeof(array)/sizeof(array[0]);
     int frist = BinarySearch_2(array,length,3);
     int last = BinarySearch_3(array,length,3); printf(" 3第一次出现的位置 :%d ,3第二次出现的位置 %d \n",frist, last);
