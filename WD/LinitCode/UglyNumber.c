@@ -20,7 +20,7 @@ int UglyNumber(int n)
     Ugly[0] = 1;
     int val;
     int index = 0;
-    while( index < n )
+    while( index < length )
     {
         int val = Min(Ugly[index2]*2, Ugly[index3]*3, Ugly[index5] *5);
         if( val == Ugly[index2]*2 )
@@ -35,10 +35,9 @@ int UglyNumber(int n)
         {
             index5++;
         }
-        Ugly[index++] = val;
+        Ugly[++index] = val;
     }
-    return Ugly[index];
-
+    return Ugly[index - 1];
 }
 int main()
 {
