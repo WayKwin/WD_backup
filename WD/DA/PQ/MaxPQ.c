@@ -31,6 +31,11 @@ void sink(MAXPQ* pq, int n, int tail)
         n = k;
     }
 }
+void swim(MAXPQ* pq)
+{
+    if( pq == NULL || pq->size < 2)
+        return;
+}
 void exch(int* a,int* b)
 {
     int tmp = *a;
