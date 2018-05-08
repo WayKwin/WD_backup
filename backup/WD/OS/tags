@@ -1,0 +1,178 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BLOCK_SIZE	Mymalloc/malloc.c	5;"	d	file:
+BLOCK_SIZE	Mymalloc/mymalloc.c	5;"	d	file:
+CLIENT_TYPE	messageQueue/comm.h	15;"	d
+ERR_EXIT	pipe/client.c	9;"	d	file:
+ERR_EXIT	pipe/communication/client.c	9;"	d	file:
+ERR_EXIT	pipe/communication/service.c	9;"	d	file:
+ERR_EXIT	pipe/fifo/copy.c	7;"	d	file:
+ERR_EXIT	pipe/fifo/dstfile.c	7;"	d	file:
+ERR_EXIT	pipe/service.c	9;"	d	file:
+MAXARG	shell/real_shell/shell.h	14;"	d
+MAXARG	shell/shell.h	14;"	d
+MAXLINE	shell/real_shell/shell.h	13;"	d
+MAXLINE	shell/shell.h	13;"	d
+MAX_PROMPT	shell/real_shell/shell.h	12;"	d
+MAX_PROMPT	shell/shell.h	12;"	d
+P	PV/comm.c	/^int P(int semid,int who)$/;"	f
+PATHNAME	PV/comm.h	6;"	d
+PATHNAME	messageQueue/comm.h	12;"	d
+PATHNAME	sharedMemory/comm.h	6;"	d
+PROJ_ID	messageQueue/comm.h	13;"	d
+PROJ_ID	sharedMemory/comm.h	7;"	d
+PRO_J	PV/comm.h	7;"	d
+SERVER_TYPE	messageQueue/comm.h	14;"	d
+V	PV/comm.c	/^int V(int semid,int who)$/;"	f
+_COMM_H_	messageQueue/comm.h	2;"	d
+__ADD_H__	io/lib/dynamic/myadd.h	2;"	d
+__ADD_H__	io/lib/myadd.h	2;"	d
+__ADD_H__	io/lib/staticlib/myadd.h	2;"	d
+__SUB_H__	io/lib/dynamic/mysub.h	2;"	d
+__SUB_H__	io/lib/mysub.h	2;"	d
+__SUB_H__	io/lib/staticlib/mysub.h	2;"	d
+__buf	PV/comm.h	/^    struct seminfo *__buf;$/;"	m	union:semun	typeref:struct:semun::seminfo
+align8	Mymalloc/malloc.c	/^size_t align8(size_t size)$/;"	f
+align8	Mymalloc/mymalloc.c	/^size_t align8(size_t size)$/;"	f
+append_redirect	shell/real_shell/shell.c	/^void append_redirect()$/;"	f
+append_redirect	shell/shell.c	/^void append_redirect()$/;"	f
+append_redirect_flag	shell/real_shell/shell.c	/^  int append_redirect_flag = 0;$/;"	v
+append_redirect_flag	shell/shell.c	/^  int append_redirect_flag = 0;$/;"	v
+append_redirect_pos	shell/real_shell/shell.c	/^  int append_redirect_pos;$/;"	v
+append_redirect_pos	shell/shell.c	/^  int append_redirect_pos;$/;"	v
+arg	shell/process.c	/^char * arg[] = {$/;"	v
+argc	shell/real_shell/shell.c	/^  int argc = 0;$/;"	v
+argc	shell/shell.c	/^  int argc = 0;$/;"	v
+argv	shell/real_shell/shell.c	/^  char *argv[8];$/;"	v
+argv	shell/shell.c	/^  char *argv[8];$/;"	v
+array	PV/comm.h	/^    unsigned short *array;$/;"	m	union:semun
+before	Mymalloc/malloc.c	/^    t_block before;$/;"	m	struct:s_block	file:
+before	Mymalloc/mymalloc.c	/^    t_block before;$/;"	m	struct:s_block	file:
+buf	PV/comm.h	/^    struct semid_ds *buf;$/;"	m	union:semun	typeref:struct:semun::semid_ds
+buf	shell/real_shell/shell.h	/^char * buf;$/;"	v
+cc	sharedMemory/makefile	/^cc = gcc$/;"	m
+cmp	messageQueue/srtcmp.c	/^int cmp(char *a,char *b)$/;"	f
+commPV	PV/comm.c	/^int commPV(int semid,int who,int op)$/;"	f
+commShm	sharedMemory/comm.c	/^static int commShm(size_t size,int flags)$/;"	f	file:
+creatMessageQueue	messageQueue/comm.c	/^int creatMessageQueue()$/;"	f
+creatSem	PV/comm.c	/^int creatSem(int nsems)$/;"	f
+createShm	sharedMemory/comm.c	/^int createShm(int size)$/;"	f
+data	Mymalloc/malloc.c	/^    char data[]; \/\/柔性数组,表示结构体后第一个数据开始处$/;"	m	struct:s_block	file:
+data	Mymalloc/mymalloc.c	/^    char data[]; \/\/柔性数组,表示结构体后第一个数据开始处$/;"	m	struct:s_block	file:
+destoryMessageQueue	messageQueue/comm.c	/^int destoryMessageQueue(int msgid)$/;"	f
+destorySemSet	PV/comm.c	/^int destorySemSet(int semid)$/;"	f
+destroyShm	sharedMemory/comm.c	/^int destroyShm(int shmid)$/;"	f
+do_execute	shell/real_shell/shell.c	/^void do_execute()$/;"	f
+do_execute	shell/shell.c	/^void do_execute()$/;"	f
+do_parse	shell/real_shell/shell.c	/^void  do_parse(char *buf)$/;"	f
+do_parse	shell/shell.c	/^void  do_parse(char *buf)$/;"	f
+extend_heap	Mymalloc/malloc.c	/^t_block extend_heap(t_block last,size_t s)$/;"	f
+extend_heap	Mymalloc/mymalloc.c	/^t_block extend_heap(t_block last,size_t s)$/;"	f
+find_block	Mymalloc/malloc.c	/^t_block find_block(t_block *last, size_t size)$/;"	f
+find_block	Mymalloc/mymalloc.c	/^t_block find_block(t_block *last, size_t size)$/;"	f
+first_block	Mymalloc/malloc.c	/^t_block first_block = NULL;$/;"	v
+first_block	Mymalloc/mymalloc.c	/^t_block first_block = NULL;$/;"	v
+free	Mymalloc/malloc.c	/^    int free;$/;"	m	struct:s_block	file:
+free	Mymalloc/mymalloc.c	/^    int free;$/;"	m	struct:s_block	file:
+func	shell/process.c	/^void func(char * arg[])$/;"	f
+fusion	Mymalloc/malloc.c	/^t_block fusion(t_block p)$/;"	f
+fusion	Mymalloc/mymalloc.c	/^t_block fusion(t_block p)$/;"	f
+getMessageQueue	messageQueue/comm.c	/^int getMessageQueue()$/;"	f
+getSemId	PV/comm.c	/^static  int getSemId(int nums,int flags)$/;"	f	file:
+getSemSet	PV/comm.c	/^int getSemSet(int nsems)$/;"	f
+getShm	sharedMemory/comm.c	/^int getShm(int size)$/;"	f
+get_block	Mymalloc/malloc.c	/^t_block get_block(void * p)$/;"	f
+get_block	Mymalloc/mymalloc.c	/^t_block get_block(void * p)$/;"	f
+hostname	shell/real_shell/type_prompt.c	/^char hostname[max_name_len];$/;"	v
+hostname	shell/type_prompt.c	/^char hostname[max_name_len];$/;"	v
+initSem	PV/comm.c	/^int initSem(int semid,int nums,int inintVal)$/;"	f
+main	Mymalloc/malloc.c	/^int main()$/;"	f
+main	Mymalloc/mymalloc.c	/^int main()$/;"	f
+main	PV/pv.c	/^int main()$/;"	f
+main	fork/fork.c	/^int main()$/;"	f
+main	io/lib/dynamic/main.c	/^int main()$/;"	f
+main	io/lib/main.c	/^int main()$/;"	f
+main	io/lib/staticlib/main.c	/^int main()$/;"	f
+main	io/open.c	/^int main()$/;"	f
+main	io/rest/open.c	/^int main()$/;"	f
+main	io/rw.c	/^int main()$/;"	f
+main	io/test.c	/^int main()$/;"	f
+main	messageQueue/client.c	/^int main()$/;"	f
+main	messageQueue/server.c	/^int main()$/;"	f
+main	messageQueue/srtcmp.c	/^int main()$/;"	f
+main	pipe/UnknownPipe/UnknownPipe.c	/^int main()$/;"	f
+main	pipe/client.c	/^int main()$/;"	f
+main	pipe/communication/client.c	/^int main()$/;"	f
+main	pipe/communication/service.c	/^int main()$/;"	f
+main	pipe/fifo/copy.c	/^int main()$/;"	f
+main	pipe/fifo/dstfile.c	/^int main()$/;"	f
+main	pipe/file.c	/^int main()$/;"	f
+main	pipe/service.c	/^int main()$/;"	f
+main	sharedMemory/client.c	/^int main()$/;"	f
+main	sharedMemory/server.c	/^int main()$/;"	f
+main	shell/process.c	/^int main()$/;"	f
+main	shell/real_shell/read_command.c	/^int main()$/;"	f
+main	shell/real_shell/shell.c	/^int main()$/;"	f
+main	shell/shell.c	/^int main()$/;"	f
+main	shell/type_prompt.c	/^int main()$/;"	f
+malloc_t	Mymalloc/malloc.c	/^void *malloc_t(size_t size)$/;"	f
+malloc_t	Mymalloc/mymalloc.c	/^void *malloc_t(size_t size)$/;"	f
+max_name_len	shell/real_shell/type_prompt.c	3;"	d	file:
+max_name_len	shell/type_prompt.c	3;"	d	file:
+max_path_len	shell/real_shell/type_prompt.c	4;"	d	file:
+max_path_len	shell/type_prompt.c	4;"	d	file:
+messageGet	messageQueue/comm.c	/^static int  messageGet(int flags)$/;"	f	file:
+msgbuf	messageQueue/comm.h	/^struct msgbuf$/;"	s
+mtext	messageQueue/comm.h	/^    char mtext[1024];$/;"	m	struct:msgbuf
+mtype	messageQueue/comm.h	/^    long mtype;$/;"	m	struct:msgbuf
+myadd	io/lib/myadd.c	/^int myadd(int a,int b)$/;"	f
+myfree	Mymalloc/malloc.c	/^void myfree(void *p)$/;"	f
+myfree	Mymalloc/mymalloc.c	/^void myfree(void *p)$/;"	f
+mymalloc	Mymalloc/malloc.c	/^void* mymalloc(size_t size )$/;"	f
+mymalloc	Mymalloc/mymalloc.c	/^void* mymalloc(size_t size )$/;"	f
+mysub	io/lib/mysub.c	/^int mysub(int a,int b)$/;"	f
+next	Mymalloc/malloc.c	/^    t_block next;$/;"	m	struct:s_block	file:
+next	Mymalloc/mymalloc.c	/^    t_block next;$/;"	m	struct:s_block	file:
+padding	Mymalloc/malloc.c	/^    int padding;$/;"	m	struct:s_block	file:
+padding	Mymalloc/mymalloc.c	/^    int padding;$/;"	m	struct:s_block	file:
+pathname	shell/real_shell/type_prompt.c	/^char pathname[max_path_len];$/;"	v
+pathname	shell/type_prompt.c	/^char pathname[max_path_len];$/;"	v
+pipe_flag	shell/real_shell/shell.c	/^  int pipe_flag = 0;$/;"	v
+pipe_flag	shell/shell.c	/^  int pipe_flag = 0;$/;"	v
+pipe_pos	shell/real_shell/shell.c	/^  int pipe_pos;$/;"	v
+pipe_pos	shell/shell.c	/^  int pipe_pos;$/;"	v
+process_create	shell/process.c	/^void process_create(void (*func)( char* arg[]),char *arg[] )$/;"	f
+promopt	shell/real_shell/shell.h	/^char promopt[256];$/;"	v
+pwd	shell/real_shell/shell.h	/^struct passwd *pwd;$/;"	v	typeref:struct:passwd
+pwd	shell/shell.h	/^struct passwd *pwd;$/;"	v	typeref:struct:passwd
+read_command	shell/real_shell/read_command.c	/^int read_command(char* command[], char*parameters[], char *prompt)$/;"	f
+recMessage	messageQueue/comm.c	/^int recMessage(int msgid, int recvType, char* recv_msg)$/;"	f
+redirect	shell/real_shell/shell.c	/^void redirect ()$/;"	f
+redirect	shell/shell.c	/^void redirect ()$/;"	f
+redirect_flag	shell/real_shell/shell.c	/^  int redirect_flag = 0;$/;"	v
+redirect_flag	shell/shell.c	/^  int redirect_flag = 0;$/;"	v
+redirect_pos	shell/real_shell/shell.c	/^  int redirect_pos ;$/;"	v
+redirect_pos	shell/shell.c	/^  int redirect_pos ;$/;"	v
+s_block	Mymalloc/malloc.c	/^struct s_block$/;"	s	file:
+s_block	Mymalloc/mymalloc.c	/^struct s_block$/;"	s	file:
+semun	PV/comm.h	/^union semun$/;"	u
+size	Mymalloc/malloc.c	/^    size_t size;$/;"	m	struct:s_block	file:
+size	Mymalloc/mymalloc.c	/^    size_t size;$/;"	m	struct:s_block	file:
+sndMessage	messageQueue/comm.c	/^int sndMessage(int msgid, int whom, char *send_msg)$/;"	f
+split_block	Mymalloc/malloc.c	/^void split_block(t_block b,size_t used_size)$/;"	f
+split_block	Mymalloc/mymalloc.c	/^void split_block(t_block b,size_t used_size)$/;"	f
+symbol	shell/real_shell/shell.c	/^void symbol()$/;"	f
+symbol	shell/shell.c	/^void symbol()$/;"	f
+t_block	Mymalloc/malloc.c	/^typedef struct s_block *t_block;$/;"	t	typeref:struct:s_block	file:
+t_block	Mymalloc/mymalloc.c	/^typedef struct s_block *t_block;$/;"	t	typeref:struct:s_block	file:
+tpye_prompt	shell/real_shell/shell.c	/^void tpye_prompt()$/;"	f
+tpye_prompt	shell/shell.c	/^void tpye_prompt()$/;"	f
+type_prompt	shell/real_shell/type_prompt.c	/^void type_prompt(char * prompt)$/;"	f
+type_prompt	shell/type_prompt.c	/^void type_prompt(char * prompt)$/;"	f
+val	PV/comm.h	/^    int val;$/;"	m	union:semun
+valid_addr	Mymalloc/malloc.c	/^int valid_addr(void *p)$/;"	f
+valid_addr	Mymalloc/mymalloc.c	/^int valid_addr(void *p)$/;"	f
