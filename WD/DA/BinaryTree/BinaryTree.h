@@ -5,7 +5,6 @@
 #define MAX_SIZE 100
 typedef char treeNodeType;
 typedef struct _treeNode{
-
     struct _treeNode* left;
     struct _treeNode* right;
     treeNodeType value;

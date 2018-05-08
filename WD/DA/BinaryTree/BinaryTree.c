@@ -25,6 +25,7 @@ void queuePush(queue* q,treeNode* n )
     q->tail%=MAX_SIZE;
     q->size++;
 }
+
 void  queueFront(queue* q, treeNode* n)
 {
     if(q == NULL )
