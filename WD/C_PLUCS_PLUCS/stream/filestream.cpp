@@ -1,5 +1,6 @@
 #include<iostream>
 #include<fstream>
+#include<string>
 using namespace::std;
 void outfile()
 {
@@ -32,15 +33,13 @@ int main()
 
     // 在创建文件流对象时就打开text文件
     //fstream f("text") ;
-    // 打印不出来 可能重载了 stream的 << 操作符
-    //f << "hello world bt f" << endl;
-    //ofstream of;
-    // 打印不出来 可能重载了 stream的 << 操作符
-    //of << "hello world by of" << endl;
+    ofstream of;
     //worong  open void 类型
     //if( of.open("text") )
-
-    //of.open("text");
+  
+    of.open("text");
+    string s("abc");
+    
     //if(of)//正确监测方法
     //cout << "open file successfully";
 }

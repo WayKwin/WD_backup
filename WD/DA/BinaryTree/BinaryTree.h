@@ -59,4 +59,5 @@ typedef struct _stack
     void queuePush(queue* q,treeNode* n );
     void TreeMirror(treeNode* root);
     int IsCompleteTree(treeNode* root);
+    int IsBalanceTree(treeNode* Node);
 #endif

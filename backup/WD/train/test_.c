@@ -7,6 +7,7 @@ void fun(int a)
     /*fun(a++);*/
     printf("%d\n",a);
 }
+
 int main()
 {
     int a = 1;

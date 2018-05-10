@@ -354,7 +354,6 @@ void PostOrderByStack_1(treeNode* root)
 {
     stack s;
     StackInit(&s);
-    int frist_in_top = 0;
     treeNode* cur = root;
     while(!StackEmpty(&s) || cur != NULL)
     {
@@ -395,8 +394,7 @@ void PostOrderByStack_2(treeNode* root)
     // 因为node入栈的顺序 top 先是左子树 然后是右子树 最后是根节点
     // 如果 node 的左右节点任何一个被被访过了,那么node 也可以出栈 很巧妙
     if( root == NULL)
-        return ;
-    stack s;
+    sskldjtack s;
     StackInit(&s);
     treeNode* cur ;
     StackPush(&s, root);
@@ -484,4 +482,48 @@ int IsCompleteTree(treeNode* root)
        }
     }
     return 1;
+}
+int IsBalanceTree(treeNode* Node)
+{
+  if(Node == NULL)
+    return 0;
+  int left_height= IsBalanceTree(Node->left) +1; 
+  int right_height = IsBalanceTree(Node->right) + 1;
+  if(( left_height  - right_height <= 1 ) || left_height - right_height >= -1)
+  {
+    return  1;      
+  }
+  else 
+  {
+    return 0;
+  } 
+}
+int IsPart(treeNode* tree1, treeNode* tree2)
+{
+  if( tree2 == NULL )
+    return 1;
+  if( tree1 == NULL )
+    return 0;
+  if( tree1->value != tree2->value )
+  {
+    return 0;
+  }
+  return IsPart(tree1->left, tree2->left) + IsPart(tree1->right, tree2->right);
+}
+int IsPartTree(treeNode* tree1, treeNode* tree2)
+{
+  if( tree1 == NULL )
+    return 0;
+  if(tree2 == NULL)
+    return 1;
+  int result = 0;
+  if(tree1->value == tree2->value)
+   result =  IsPart(tree1,tree2);
+  if(result != 0)
+  {
+    result = IsPartTree(tree1->left,tree2);
+  }
+  if( !result)
+    result = IsPartTree(tree1->right, tree2);
+  return result;  
 }

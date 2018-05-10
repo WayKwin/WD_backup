@@ -32,8 +32,7 @@ struct s_block
 };
 // 找到第一个可以开辟的block
 // last 是记录b为空的话,最后一个不为空的结点
-t_block find_block(t_block *last, size_t size)
-{
+t_block find_block(t_block *last, size_t siz
     t_block b = first_block;
     *last = b;
     while(b && !(b->size>=size && b->free))

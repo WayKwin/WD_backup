@@ -28,11 +28,11 @@ void _polish(node* node, char* str, int* index)
     //注意不能让字符串来回递归
     if(str+*index == NULL || isalnum(node->value) )
         return ;
-         node->left = malloc(sizeof(struct _node));
+         node->left = (node*)malloc(sizeof(struct _node));
 
          (*index)++;
          _polish(node->left, str,index);
-         node->right = malloc(sizeof(struct _node));
+         node->right = (ndoe*)malloc(sizeof(struct _node));
          (*index)++;
         _polish(node->right, str,index);
 }
