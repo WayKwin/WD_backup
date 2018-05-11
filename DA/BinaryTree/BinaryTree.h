@@ -60,4 +60,8 @@ typedef struct _stack
     void TreeMirror(treeNode* root);
     int IsCompleteTree(treeNode* root);
     int IsBalanceTree(treeNode* Node);
+////////////////////////////////////////
+// interview
+// ////////////////////////////////////
+    treeNode* LastCommonFather(treeNode*root, treeNode* node1,treeNode*node2);
 #endif

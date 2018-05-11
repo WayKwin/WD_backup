@@ -2,7 +2,7 @@
 CC=clang
 OBJ=UnitTestBinary
 #SRC=UnitTest_BinaryTree.c BinaryTree.c
-SRC = BinaryTree.c UnitTest.c
+SRC = BinaryTree.c UnitTest.c interview.c
 FLAGS= -g 
 $(OBJ):$(SRC)
 	$(CC) $(SRC) -o $(OBJ) $(FLAGS)

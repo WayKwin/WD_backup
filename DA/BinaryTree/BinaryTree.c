@@ -394,7 +394,8 @@ void PostOrderByStack_2(treeNode* root)
     // 因为node入栈的顺序 top 先是左子树 然后是右子树 最后是根节点
     // 如果 node 的左右节点任何一个被被访过了,那么node 也可以出栈 很巧妙
     if( root == NULL)
-    sskldjtack s;
+      return;
+    stack s;
     StackInit(&s);
     treeNode* cur ;
     StackPush(&s, root);

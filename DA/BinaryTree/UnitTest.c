@@ -193,10 +193,44 @@ void testIsCompleteTree()
         printf("不是完全树\n");
 
 }
+void testFindCommonFater()
+{
+  HEAD;
+  treeNode node1;
+  treeNode node2;
+  treeNode node3;
+  treeNode node4;
+  treeNode node5;
+  treeNode node6;
+  treeNode node7;
+  node1.value ='1';
+  node2.value ='2';
+  node3.value ='3';
+  node4.value ='4';
+  node5.value ='5';
+  node6.value ='6';
+  node7.value ='7';
+  node1.left = &node2;
+  node1.right = &node3;
+  node2.right = &node5;
+  node2.left = &node4;
+  node3.left = &node6;
+  node3.right = &node7;
+  node4.right = node4.left = NULL;
+  node5.right = node5.left = NULL;
+  node6.right = node6.left = NULL;
+  node7.right = node7.left = NULL;
+  treeNode* ret = LastCommonFather(&node1,&node4,&node5);
+  if(ret != NULL)
+    printf("except : 2, act :%c\n",ret->value);
+  LevelOrder(&node1);
+  PreOrder(&node1);
+}
 int main()
 {
-    testIsCompleteTree();
-    testTreeMirror();
+    testFindCommonFater();
+    /*testIsCompleteTree();*/
+    /*testTreeMirror();*/
     /*testOrderByStack();*/
     /*testParent();*/
     /*testTreeHeight();*/
