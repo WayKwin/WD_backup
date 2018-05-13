@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<pthread.h>
 #include<malloc.h>
-#define Pthread_Num 10
+#define Pthread_Num 3
 typedef void* Process_arg;
 typedef void*(*p_Process)(Process_arg arg) ;
 typedef struct _Mission
@@ -98,7 +98,7 @@ int add_Mission(p_Process ps, Process_arg arg)
   }
   else 
   tp->Mission_head->next = new_Mission;
-  pthread_mutex_lock(&(tp->GetMission_mutex));
+  pthread_mutex_unlock(&(tp->GetMission_mutex));
   pthread_cond_signal(&(tp->Mission_ready));
   return 1;
 }
@@ -157,8 +157,9 @@ int main()
     //加入任务后线程开始执行
     add_Mission(my_porcess, NULL);
   } 
-  sleep(19);
+  sleep(5);
   Thread_PoolDestroy(tp);
+  printf("you running here \n");
   return 0;
 }
 

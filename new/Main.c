@@ -10,7 +10,7 @@ typedef enum state{
 int main()
 {
   FILE* input,*output;
-  input = fopen("./in.c","r");
+  input = fopen("./input.c","r");
   output = fopen("./output.c","w");
   char ch,nextch;
   state s = NORMAL;
