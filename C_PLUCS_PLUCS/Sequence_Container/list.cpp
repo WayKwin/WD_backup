@@ -3,26 +3,28 @@
 #include<deque>
 using namespace::std;
 list<deque<int> > l;
-deque<int> s;
+deque<int> q1,q2;
 int main()
 {
-  
-  s.push_back(1);
-  s.push_back(2);
-  l.push_back(s);
-  //迭代器的类型
-  list<deque<int> > :: iterator iter1 = l.begin();
-  auto iter2 = l.end();
-  size_t i = 0;
-  size_t j = 0;
-  iter1->push_back(3);
-  //deque中的迭代器
-  auto iter3 = iter1->begin();
-  for( ; i < l.size(); i++ )
+  q1.push_back(1); 
+  q1.push_back(2); 
+  q1.push_back(3); 
+  q2.push_back(4);
+  q2.push_back(5);
+  l.push_back(q1);
+  l.push_back(q2);
+  auto iter_l_begin = l.cbegin();
+  auto iter_l_end  = l.cend();
+  while(iter_l_begin != iter_l_end)
   {
-    for(; j < iter1->size(); j++)
+    auto iter_q_begin = iter_l_begin->begin(); 
+    auto iter_q_end = iter_l_begin->end(); 
+    while(iter_q_begin != iter_q_end)
     {
-      cout<< *iter3; 
+      cout << *iter_q_begin;
+      iter_q_begin++;
     }
+    iter_l_begin++;
   }
+  cout<< endl;
 }
