@@ -10,5 +10,5 @@ typedef struct SearchTreeNode
 void SearchTreeInit(SearchTreeNode** root,SearchTreeType key);
 void SearchTreeInsert(SearchTreeNode** root, SearchTreeType key);
 SearchTreeNode* SearchTreeFind(SearchTreeNode** root, SearchTreeType to_find);
-void SearchTreeRemove(SearchTreeNode** root, SearchTreeType key);
-void Inorder(SearchTreeNode* root);
+void SearchTreeRemove(SearchTreeNode** root, SearchTreeType to_delete);
+void Inorder(SearchTreeNode* root)-
