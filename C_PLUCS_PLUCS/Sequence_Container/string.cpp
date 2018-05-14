@@ -48,8 +48,14 @@ void SwapContainer()
   //初始化的时候使用迭代器也可以
   vector<const char*>v3{i1,i2};
 }
+//容器的插入
+void Push_Back()
+{
+  //使用push_back是创建临时对象,将其压入容器中
+  //使用emplace是在容器的管理内存中使用构造函数直接创建对象
+}
 // 总结 在初始化时或者之后的赋值,交换操作
-// 迭代器是无关容器类型的
+// 迭代器是无关容器类型
 int main()
 {
   CopyContainer();
