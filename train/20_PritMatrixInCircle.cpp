@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace::std;
-void PrintMatrixInCircle(int ** numbers,int columns,int rows,int start)
+void PrintMatrixInCircle(int  numbers[][3],int columns,int rows,int start)
 {
   int startRow = start;
   int startColumn = start;
@@ -41,7 +41,7 @@ void PrintMatrixInCircle(int ** numbers,int columns,int rows,int start)
     }
   }
 }
-void PrintMaxtrixClockwisely(int ** numbers, int columns, int rows)
+void PrintMaxtrixClockwisely(int  numbers[][3], int columns, int rows)
 {
   if( numbers == NULL || columns <=0 || rows <=  0)
     return;
@@ -49,5 +49,16 @@ void PrintMaxtrixClockwisely(int ** numbers, int columns, int rows)
   while(columns > 2 * start && rows > 2 * start)
   {
     PrintMatrixInCircle(numbers, columns, rows, start);
+    start++;
   }
+}
+int main()
+{
+    int array[3][3] =
+    {
+        {1, 2, 3},
+        {8, 9, 4},
+        {7, 6, 5},
+    };
+  PrintMaxtrixClockwisely(array, 3, 3);
 }
