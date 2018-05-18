@@ -40,3 +40,19 @@ void testUnique()
   //
   words.erase(iter, words.end());
 }
+void testlambda()
+{
+  //find_if第三个参数只接受一元谓词的函数,如果想使用多个参数可以
+  //使用lamdba表达式
+  vector<string> vs = {"hello","world"};
+  size_t size  = 2;
+  auto wc = find_if(vs.begin(),vs.end(),[size](const string &a) {return a.size() >= size;} );  
+  //lamdba表达式
+  auto c  = [size](const string &a){return a.size() >= size;};
+  //[] 捕获列表 (里面的参数是 父函数testlamdba 中的局部变量,表明在lambda函数中可以使用此局部变量)
+  //lamdba可以直接使用在函数之外声的变量,例如cout 也可以直接使用函数内
+  //static修饰的变量
+  //捕获变量是临时拷贝, 
+  //也可以捕获 引用指针,但必须保证在lambda执行期间 是有效的
+
+}
