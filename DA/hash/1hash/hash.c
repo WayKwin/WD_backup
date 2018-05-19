@@ -56,6 +56,7 @@ void HashInsert(HashTable* ht,HashElem elem)
   {
     //动态扩容考虑 元素的拷贝
     //TODO
+    
   }
   size_t offset = (*ht->func)(key,ht);
   //使用 != empty 局限性,delete 状态 !=empty 但是可以插入
@@ -63,35 +64,82 @@ void HashInsert(HashTable* ht,HashElem elem)
   while(ht->data[offset].state == Vaild  )
   {
     offset++;
-    if( offset == ht->size )
+    //在占用中找到了重复元素
+    if(ht->data[offset].key == key)
+    {
+      //重复元素
+      printf("重复元素\n");
+      return;
+
+    }
+    if( offset == ht->capacity )
     {
       //有填充因子存在 不会死循环
       offset = 0;
     }
   }
 
-  if(ht->data[offset].key == key)
-  {
-    //重复元素
-    printf("重复元素\n");
-    return;
-  }
 
   //找到第一个状态不是 已经占用的位置插入
   ht->data[offset] = elem;     
   ht->data[offset].state = Vaild;
   ht->size++;
 }
-void HashFind(HashTable* ht, HashElem* elem)
+ValType HashFind(HashTable* ht,  KeyType key)
 {
-  
+  if(ht == NULL)
+    return -1;
+  size_t offset = (*hash_func)(key,ht);
+  //不为空但是又不是 key offset ++
+  while(1)
+  {
+    //碰到查找的元素是delete状态
+    //其实可以忽略,往后找空的就行
+    if(ht->data[offset].state == Empty)
+    {
+      printf("not found \n");
+      return -1;
+    }
+    //排除delete状态
+    if(ht->data[offset].key == key && ht->data[offset].state == Vaild ) 
+    {
+     return ht->data[offset].val; 
+    }
+    offset++;
+    if(offset == ht->capacity)
+      offset = 0;
+  }
+  //排除处于空或者删除状态,剩下while结束条件就是key == key 了(错误)
+  //遇到删除的状态还得往后找(删除后面元素的状态可能是vaild)
+  //只有遇到空状态才表示查找失败(空表示此位置肯定没有进行插入,它后面的元素就不可能是哈希冲突造成的vaild状态)
+}
+void  HashRemove(HashTable* ht,  KeyType key)
+{
+  if(ht == NULL)
+    return ;
+  size_t offset = (*hash_func)(key, ht);
+  while(ht->data[offset].state != Empty)
+  {
+    if(ht->data[offset].key == key && ht->data[offset].state == Vaild)
+    {
+      ht->data[offset].state = Deleted;
+      return;
+    }
+    offset++;
+    if(offset == ht->capacity)
+    {
+      offset = 0;
+    }
+  }
+  printf("not found \n");
+  return;
 }
 void HashPrint(HashTable* ht)
 {
   if(ht == NULL)
     return;
   size_t i = 0;
-  for( ;  i < ht->size; i++ )
+  for( ;  i < ht->capacity; i++ )
   {
     if(ht->data[i].state != Vaild)
     {

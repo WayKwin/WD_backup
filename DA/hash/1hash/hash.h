@@ -1,7 +1,6 @@
 //开发地址发
 #pragma once
 #include<stdio.h>
-#define HashMaxSize 1024
 typedef int KeyType;
 typedef char ValType;
 //这个结构体表示哈希表中的一个元素
@@ -36,7 +35,9 @@ typedef struct HashTable{
 void HashInit(HashTable* ht,HashFunc hash_func);
 void HashDestory(HashTable* ht);
 void HashInsert(HashTable* ht,HashElem elem);
+ValType HashFind(HashTable* ht,  KeyType key);
 size_t hash_func( KeyType key,HashTable*ht);
+void  HashRemove(HashTable* ht,  KeyType key);
 void HashPrint(HashTable* ht);
 
 
