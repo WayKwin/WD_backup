@@ -1,5 +1,6 @@
 #include"hash.h"
 #include<stdlib.h>
+#include<unistd.h>
 size_t hash_func( KeyType key)
 {
   return key % HashMaxSize; 
@@ -23,8 +24,8 @@ void HashDestory(HashTable* ht)
   size_t i = 0;
   for(; i < HashMaxSize; i++)
   {
-    HashElem* cur = ht->data[i];
-    HashElem* to_delete = NULL;
+    HashEelem* cur = ht->data[i];
+    HashEelem* to_delete = NULL;
     while(cur)
     {
       to_delete = cur;
@@ -35,13 +36,14 @@ void HashDestory(HashTable* ht)
   }
  ht->size = 0; 
 }
-HashElem* CreateNode(KeyType key, ValType val)
+HashEelem* CreateNode(KeyType key, ValType val)
 {
-   HashElem* elem =    (HashElem*)malloc(sizeof(HashElem));
+   HashEelem* elem =    (HashEelem*)malloc(sizeof(HashEelem));
    if(elem == NULL)
      return NULL;
    elem->key = key;
    elem->val = val;
+   elem->next = NULL;
    return elem;
 }
 void HashInsert(HashTable* ht,HashEelem elem)
@@ -55,7 +57,7 @@ void HashInsert(HashTable* ht,HashEelem elem)
   }
   else 
   {
-    HashElem* new_node= CreateNode(elem.key,elem.val);
+    HashEelem* new_node= CreateNode(elem.key,elem.val);
     new_node->next = ht->data[offset];
     ht->data[offset] = new_node;
   }
@@ -109,6 +111,25 @@ void  HashRemove(HashTable* ht,  KeyType key)
     cur = NULL;
    pre_cur->next = NULL; 
   }
+}
+void HashPrint(HashTable* ht)
+{
+  size_t i = 0;
+  for(; i < HashMaxSize; i++)
+  {
+    if( ht->data[i] == NULL )
+      continue;
+    HashEelem* cur = ht->data[i] ;
+    printf("第%lu条链表结构如下\n",i); 
+    while(cur)
+    {
+      /*sleep(1);*/
+      printf("[key: %d| val: %d] ", cur->key,cur->val);
+      cur = cur->next;
+    }
+    printf("\n");
+  }
+  printf("\n");
 }
 
 

@@ -1,6 +1,6 @@
 #pragma once
 #include<stdio.h>
-#define HashMaxSize 1024
+#define HashMaxSize 1000
 typedef int KeyType;
 typedef char ValType;
 typedef size_t (*HashFunc)(KeyType key );
@@ -9,7 +9,7 @@ typedef struct HashEelem{
   KeyType key;
   ValType val;
   struct HashEelem* next;
-}HashElem;
+}HashEelem;
 typedef struct HashTable{
   HashEelem* data[HashMaxSize];
   size_t size;
@@ -18,10 +18,11 @@ typedef struct HashTable{
   //// 填装因子
   HashFunc func;
 }HashTable;
+size_t hash_func( KeyType key);
 void HashInit(HashTable* ht,HashFunc hash_func);
 void HashDestory(HashTable* ht);
 void HashInsert(HashTable* ht,HashEelem elem);
 ValType HashFind(HashTable* ht,  KeyType key);
-size_t hash_func( KeyType key,HashTable*ht);
+size_t hash_func( KeyType key);
 void  HashRemove(HashTable* ht,  KeyType key);
 void HashPrint(HashTable* ht);

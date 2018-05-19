@@ -56,7 +56,9 @@ void HashInsert(HashTable* ht,HashElem elem)
   {
     //动态扩容考虑 元素的拷贝
     //TODO
-    
+    //扩容不能扩容整数倍() 2k+1 2k + 2
+        
+       
   }
   size_t offset = (*ht->func)(key,ht);
   //使用 != empty 局限性,delete 状态 !=empty 但是可以插入
