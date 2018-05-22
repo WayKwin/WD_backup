@@ -7,7 +7,9 @@ typedef struct BloomFilter
 {
   Bitmap bm;
   //两个函数指针
-  BloomHash bloo_hash[BloomHashCount];
+  BloomHash bool_hash[BloomHashCount];
 }BloomFilter;
 void BloomFilterInit(BloomFilter* bf,uint64_t capacity);
 void BloomFilterDestroy(BloomFilter* bf);
+void BloomFilterSearch(BloomFilter* bf,const char* str);
+void BloomFilterInsert(BloomFilter* bf,const char* str);

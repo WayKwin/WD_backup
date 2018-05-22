@@ -41,7 +41,7 @@ int BitmapTest(Bitmap* bm, uint64_t index)
   uint64_t offset =  GetOffset(index) ;
   //注意offset可能移动64位
   uint64_t ret = bm->data[n] & (0x1lu << offset );
-  return ret ;
+  return ret == 0? 0 : 1 ;
 }
 void BitmapSet(Bitmap* bm, uint64_t index)
 {
@@ -61,6 +61,10 @@ void BitmapUnset(Bitmap* bm, uint64_t index)
 }
 void BitmapFill(Bitmap* bm)
 {
- 
+  memset(bm->data,1,sizeof(BitmapType)*bm->size);  
+}
+void Bitmapclever(Bitmap* bm)
+{
+  memset(bm->data,0,sizeof(BitmapType)*bm->size);  
 }
 

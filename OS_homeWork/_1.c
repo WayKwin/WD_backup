@@ -5,16 +5,16 @@
 typedef struct PCB
 {
   int pid;
+  //优先级
   int priority;
+  //运行时间
   int time;
+  //程序状态
   int flag;
   struct PCB* next;
+  struct PCB* prev;
 }PCB;
-//typedef  struct PCBQueue
-//{
-  //PCB* front;
-  //PCB* tail;
-//}PCBQueue;
+// 进程初始化
 void ProcessInit(PCB** head)
 {
   if(head == NULL)
@@ -40,36 +40,35 @@ void ProcessInit(PCB** head)
       cur = cur->next;
     }
     cur->next = NewProcess;
+    NewProcess->prev = cur;
+    NewProcess->next = NULL;
   }
 }
-//指针交换传入二级指针
-void ProcessSort(PCB** phead)
+void ProcessSort(PCB* phead)
 {
-  PCB* head = *phead;
-  if( head == NULL )
-    return;
-  PCB* start = head;
-  while( head->next)
-  {
-    head = head->next;
-  }
-  PCB* end = head;
-
-  while(start)
+  PCB* start = phead;
+  PCB* end = NULL;
+  while(start != end)
   {
     PCB* i;
-    for(i = start; i != end; i = i ->next)
+      
+    for(i = start; i->next != end; i = i ->next)
     {
       if( i->priority < i->next->priority)
       {
-        PCB* tmp  = i;
-        i->next = i;
-        i->next->next = tmp;
-        //交换
+        PCB* i_next = i->next;
+        PCB* i_next_next = i->next->next;
+        PCB tmp = *i;
+        *i = *(i->next); 
+        i->next = i_next; 
+        *(i->next) = tmp;
+        i->next->next = i_next_next;
+        /*PCB*  i_next = i ->next;*/
+        /*i->next = i_next ->next;*/
+        /*i_next->next = i;*/
       }
     }
-    i = end;
-    start = start->next;
+    end = i;
   }
 }
 void Run(PCB** phead)
@@ -87,7 +86,7 @@ void Run(PCB** phead)
   else 
   {
     //如果运行的程序也结束了,将头指置NULL
-    if(to_run->priority <= 0 && to_run->time  <= 0)
+    if(to_run->time  <= 0)
     {
       free(to_run);
       to_run = NULL;
@@ -104,7 +103,7 @@ void Run(PCB** phead)
     to_run = NULL;
     return;
   }
-  //不为空,将其加入队列尾部
+  //不为空,将其加入队列
   PCB* cur = *phead;
   while(cur->next)
   {
@@ -117,10 +116,9 @@ void PrintRunnignStatus(PCB** head)
 {
   PCB* cur = *head;
   printf("初始状态为\n");
-  int i = 1;
   while(cur)
   {
-    printf( "进程 : %d,pid %d  ",i, cur->pid);
+    printf( "[pid %d , priority:%d time :%d ]", cur->pid,cur->priority,cur->time); 
     cur = cur->next;
   }
   printf("\n"); 
@@ -133,7 +131,7 @@ void PrintRunnignStatus(PCB** head)
       cur = *head;
       while(cur)
       {
-        printf( "pid: %d ",cur->pid);
+      printf( "[pid %d , priority:%d time :%d ]", cur->pid,cur->priority,cur->time); 
         cur = cur->next;
       }
       printf("\n");
@@ -151,6 +149,13 @@ int main()
   {
     ProcessInit(&head);  
   }
+  ProcessSort(head);
+  while(head)
+  {
+    printf(" %d",head->priority);
+    head = head->next;
+  }
+  printf("\n");
   PrintRunnignStatus(&head);
   return 0;
 }
