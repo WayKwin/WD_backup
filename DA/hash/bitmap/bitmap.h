@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdint.h>
-typedef uint16_t BitmapType;
+typedef uint64_t BitmapType;
 typedef struct Bitmap
 {
   BitmapType* data;
