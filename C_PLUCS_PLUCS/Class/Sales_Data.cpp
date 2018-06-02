@@ -1,32 +1,15 @@
-#include<iostream>
-#include<string>
-using namespace::std;
-class Sales_Data
-{
-  //在类中声明友元函数
-	friend Sales_Data add(const Sales_Data&, const Sales_Data&);
-	friend ostream& print(ostream&, const Sales_Data&);
-	friend istream& read(istream&, Sales_Data&);
-public:
-    //defalut constructer
-	Sales_Data(const string&s, unsigned n, double p) ;
-  // copy constructer
-  Sales_Data(const Sales_Data&);
-	Sales_Data(std::istream &is);
-	Sales_Data();
-    //member function
-	string isbn()const { return this->bookNo; };
-	Sales_Data& combine(const Sales_Data&);
-private:
-	double avg_price()const;
-	string bookNo;
-	unsigned units_sold = 0;
-	double revenue = 0.0;
-};
-//默认构造器
+#include"Sales_Data.h"
 Sales_Data::Sales_Data() = default;
-//拷贝构造器
-Sales_Data:: Sales_Data(const Sales_Data& ori): bookNo(){};
+//拷贝构造函数
+Sales_Data:: Sales_Data(const Sales_Data& ori): bookNo(ori.bookNo), units_sold(ori.units_sold), revenue(ori.revenue){};
+//合成拷贝复制运算符
+ Sales_Data& Sales_Data::operator=(const Sales_Data &rhs)
+{
+  this->bookNo = rhs.bookNo;
+  this->units_sold = rhs.units_sold;
+  this->revenue = rhs.revenue;
+  return *this;
+}
 
 //初始化列表 初始化顺序是在类中的顺序!!!
 Sales_Data::Sales_Data(const string&s, unsigned n, double p) :bookNo(s), units_sold(n), revenue(p*n){};
@@ -47,7 +30,7 @@ Sales_Data&  Sales_Data::combine(const Sales_Data& rhs)
 	revenue += rhs.revenue;
 	return *this;//this指向本对象,解引用;
 }
-//接口函数实现
+/*友元函数*/
 Sales_Data add(const Sales_Data&lhs, const Sales_Data&rhs)
 {
 	//注意lhs是const修饰,不可以lhs.combine;
@@ -65,5 +48,6 @@ istream& read(istream &is, Sales_Data &item)
 ostream& print(ostream& os, const Sales_Data &item)
 {
 
-   return NULL;
+	os << item.bookNo << item.units_sold <<item.revenue;
+   return os;
 }

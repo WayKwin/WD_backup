@@ -8,7 +8,9 @@ int Partition(int data[], int start, int end)
     }
     int base = data[start];
     //考虑 3 4 5 的情况  head必须从切分点开始
+    //会把  3和4对换
     /*int head_point = start + 1;*/
+    //最合要把head和base交换
     int head_point = start;
     int tail_point = end ;
     while(head_point < tail_point)

@@ -62,6 +62,62 @@ ComplexListNode*  ComplexListNodeDetach(ComplexListNode* head)
   }
   return head2;
 }
+void CloneNodes(ComplexListNode* pHead)
+{
+  if(pHead == NULL)
+    return ;
+  ComplexListNode* pNode = pHead;
+  while( pNode!= NULL)
+  {
+    ComplexListNode* pCloned = (ComplexListNode*)malloc(sizeof(ComplexListNode));
+    pCloned->m_nValue = pNode->m_nValue;
+    pCloned->m_pNext = pNode->m_pNext;
+    pCloned->m_pSibling = NULL;
+    pNode->m_pNext = pCloned;
+
+    pNode = pCloned->m_pNext;
+  }
+}
+void ConnectSiblingNodes(ComplexListNode* pHead)
+{
+  if(pHead == NULL)
+    return;
+  ComplexListNode* pNode = pHead;
+  while(pNode != NULL)
+  {
+    ComplexListNode* pCloned = pNode->m_pNext;
+    if(pNode->m_pSibling != NULL)
+    {
+      pCloned->m_pSibling = pNode->m_pSibling->m_pNext;
+    }
+    //sibling初始化就是null
+    pNode = pCloned->m_pNext;
+  }
+}
+ComplexListNode* ReconnectNodes(ComplexListNode* pHead)
+{
+  ComplexListNode* pNode = pHead;
+  ComplexListNode* pClonedHead = NULL;
+  ComplexListNode* pClonedNode = NULL;
+  if(pNode!= NULL)
+  {
+    pClonedHead =pClonedNode = pNode->m_pNext;
+
+    pNode->m_pNext = pClonedNode->m_pNext;
+
+    pNode = pNode->m_pNext;
+  }
+  //这样Node和cloned都在同一起跑线了
+  while(pNode != NULL)
+  {
+    //交替行走
+    pClonedNode->m_pNext = pNode->m_pNext;
+    pClonedNode = pClonedNode->m_pNext;
+    pNode->m_pNext = pClonedNode->m_pNext;
+    pNode = pNode->m_pNext;
+  }
+  return pClonedHead;
+}
 ComplexListNode* ComplexListNodeCopy(ComplexListNode* head)
 {
   if(head == NULL)
