@@ -93,7 +93,7 @@ int main(int argc,char* argv[])
     {
         printf("bind error \n");
         return 3;
-    }
+
     int ret = listen(listen_sock, 2);
     if(ret != 0)
     {
