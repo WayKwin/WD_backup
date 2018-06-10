@@ -1,5 +1,5 @@
 .PHONEY:clean
 http:service.c
-	gcc $^ -o $@
-claen:
+	gcc $^ -o $@ -g
+clean:
 	rm -rf http
