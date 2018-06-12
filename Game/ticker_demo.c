@@ -8,7 +8,7 @@ int main()
 {
   void countdown(int);
   signal(SIGALRM,countdown);
-  if((set_ticker(500) == -1))
+  if((set_ticker(1500) == -1))
     perror("set_ticker");
   else 
     while(1)

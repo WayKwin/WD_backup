@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdlib.h>
 void BubleSort(int array[],int tmpArray[])
 {
 
@@ -50,6 +51,8 @@ void MergeSort(int array[],int tmpArray[],int lo,int hi)
   int mid = lo + (hi - lo ) /2;
   MergeSort(array,tmpArray,lo,mid);
   MergeSort(array,tmpArray,mid,hi);
+  printf(" [%d,%d) ",lo,hi);
+  printf("[mid: %d]",mid);
   Merge(array,tmpArray,lo,mid,hi);
 }
 // 非递归
@@ -62,44 +65,164 @@ void MergeSort(int array[],int tmpArray[],int lo,int hi)
 //    [0,2)     [2,4)        [4,6)     [6,7)
 //        [0,4)                   [4,7)
 //                    [0,7)
-void MergeSortByLoop(int array[],int tmpArray[],int length)
-{
-  int gap = 1;
-  for( ; gap < length;  gap *= 2)
-  {
-    int i = 0;
-    for(; i < length; i += 2*gap)
-    {
-        //本来是7 此时 hi = 8
-     
-        int hi = i + 2*gap;
-        if( hi > length )
-        {
-          hi = length;
-        }
-        int mid  = i + ( hi - i ) /2;
-
-        printf(" [%d,%d) ",i,hi);
-        printf("[mid: %d]",mid);
-        Merge(array,tmpArray,i,mid ,hi);
+//把所有奇数都 + 1 偶数来看待
+/*void MergeSortByLoop(int array[],int tmpArray[],int length)*/
+/*{*/
+  /*int gap = 1;*/
+  /*// 8  lo 0  hi  7  (hi > length hi = length) */
+  /*//        mid 4*/
+  /*//7    lo 0   hi 7*/
+  /*//        mid 4*/
+  /*for( ; gap <= length + 1  ;  gap *= 2)*/
+  /*{*/
+    /*int i = 0;*/
+    /*for(; i < length  ; i += gap)*/
+    /*{*/
+        /*int hi = i + gap;*/
+        /*//注意先算mid*/
+        /*int mid  = i + ( hi - i ) /2 ;*/
+        /*//后考虑越界*/
+        /*if( hi > length )*/
+        /*{*/
+          /*hi = length;*/
+        /*}*/
+        /*printf(" [%d,%d) ",i,hi);*/
+        /*printf("[mid: %d]",mid);*/
+        /*Merge(array,tmpArray,i,mid ,hi);*/
         /*int j = 0;*/
-        /*for(; j < length ; j++ )*/
+        /*for(; j < length  ; j++ )*/
         /*{*/
           /*printf(" %d", array[j]);*/
         /*}*/
         /*printf("\n");*/
-          /*}*/
+    /*}*/
+    /*printf("\n");*/
+  /*}*/
+/*}*/
+void MergeSortByLoop(int array[],size_t size)
+{
+  if(size <= 1)
+  {
+    return;
+  }
+  // [0 2) [2,4) [4,5)
+  //    [0,4)
+  //      [0, 7)
+  int* tmp = (int*) malloc(sizeof(int)* size);
+  size_t gap = 1;
+  for(; gap < size; gap *= 2)
+  {
+    size_t i = 0;
+    for(; i < size; i += 2*gap)
+    {
+      size_t beg = i;
+      size_t mid = i + gap;
+      size_t end = i + 2 * gap;
+      if( mid > size )
+      {
+        mid = size;
+      }
+      if( end > size )
+      {
+        end = size;
+      }
+        Merge(array,tmp,beg,mid,end);
     }
-    printf("\n");
   }
 }
+void swap(int *a ,int *b )
+{
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+int parition(int array[],int lo,int hi)
+{
+  if( hi - lo <= 1)
+  {
+    return lo;
+  }
+  hi--;
+  int *key = array+lo;
+  while(lo < hi)
+  {
+    while( hi > lo && array[hi] >= *key )
+    {
+      hi --;
+    }
+    while( hi > lo && array[lo] <= *key )
+    {
+      lo ++;
+    }
+    swap(array+hi,array+lo);
+  }
+  swap(array+lo,key);
+  return lo;
+}
+//挖坑法
+int parition2(int array[],int beg,int end)
+{
+  if( beg + 1 == end )
+  {
+    return beg;
+  }
+  int left = beg;
+  int right = end -1;
+  //挖坑
+  int key = array[right];
+  while(left < right)
+  {
+    while(left < right &&  array[left] <= key)
+    {
+      ++left;
+    }
+    //每次都判断一下以防越界
+    if(left < right)
+    {
+      //填坑然后挖坑
+      array[right--]=  array[left];
+    }
+    while(left< right && array[right] >= key)
+    {
+      right --;
+    }
+    if( left < right )
+    {
+      array[left++] = array[right];
+    }
+  }
+  array[left]= key;
+  return left;
+}
+
+void _QuickSort(int array[],int lo,int hi)
+{
+  if(hi - lo <= 1)
+    return;
+  int j = parition2(array,lo,hi);
+  /*printf("%d\n",j);*/
+  _QuickSort(array,lo,j);
+  _QuickSort(array,j + 1,hi);
+}
+void QuickSort(int array[],int length)
+{
+  if(array == NULL || length <= 1 )
+    return;
+  _QuickSort(array,0,length);
+}
+
 //    双指针(不看)
 int main()
 {
-  int array[] = {8,9,1,4,2,3,5};
+  /*int array[] = {1,4,8,9,2,3,5};*/
+  int array[] = {1,4,8,9,2,3,5};
+  /*int array[] = {9,8};*/
   const int length = sizeof(array) / sizeof(array[0]);
-  int tmpArray[length];
-  MergeSortByLoop(array,tmpArray,length);
+  /*int tmpArray[length];*/
+  /*MergeSort(array,tmpArray,0,length);*/
+  /*MergeSortByLoop(array,tmpArray,length);*/
+  /*MergeSortByLoop(array,length);*/
+  QuickSort(array,length);
   int i = 0;
   for(; i < length ; i++ )
   {
@@ -126,6 +249,11 @@ void QuickSortByLoop(int array[],size_t size)
   {
     // if top  == 0
     // return
+    // if( end - beg <= 1 )
+    // {
+    //    //已经有序了, continue;
+    // }
+    // [lo,mid) 和 [mid + 1, hi)
     // Push beg
     // push mid
     // push mid +1

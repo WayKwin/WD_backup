@@ -17,7 +17,8 @@ int main()
     umask(0);
    if(mkfifo("pipe",0644) == -1)
    {
-       ERR_EXIT("mkfifo");
+     printf("管道已经存在,使用使用现有管道\n");
+       /*ERR_EXIT("mkfifo");*/
    }
     int rfd = open("pipe",O_RDONLY);
     if( rfd < 0 )

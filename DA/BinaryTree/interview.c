@@ -36,6 +36,7 @@ static treeNode* _LastCommonFather(treeNode*root, treeNode* node1,treeNode*node2
     return NULL;
   }
 
+//根节点左边没找到就在右边找
   return  LeftReach == 1? _LastCommonFather(root->left, node1, node2): _LastCommonFather(root->right, node1,node2);
 }
 treeNode* LastCommonFather(treeNode*root, treeNode* node1,treeNode*node2)

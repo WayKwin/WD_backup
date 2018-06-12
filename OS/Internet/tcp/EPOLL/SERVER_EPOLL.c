@@ -9,6 +9,9 @@
 #include<sys/wait.h>
 #include<sys/epoll.h>
 #include<fcntl.h>
+//工作在et模式下
+//所有文件描述符都必须变为 非阻塞
+
 int startUp(char* port)
 {
   struct sockaddr_in locate;
@@ -58,6 +61,7 @@ struct epoll_event SetEvent(int fd,int MODEL,int buf_capacity)
 }
 void ProcesConnect(int efd,int listen_sock)
 {
+  //循环读取连接直到读完
   while(1)
   {
     struct sockaddr_in clinet;

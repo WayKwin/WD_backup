@@ -21,9 +21,9 @@ void printSIG(sigset_t* p)
     }
     printf("\n");
 }
-void hander()
+void hander(int number)
 {
-    printf("i catch you ctrl-c !!!,you can't do it forevor\n");
+    printf("i catch you ctrl-c  %d!!!,you can't do it forevor\n",number);
 }
 int main()
 {

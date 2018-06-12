@@ -81,13 +81,16 @@ int Deal_Header(char* buf,int sock)
      buf[i] = '\0';
    }
   }
-  char* method = header[0];
- char* RequestPath = header[1];
+  char method[BUFF_SIZE >> 3];
+  strcpy(method,header[0]);
+  
+  char RequestPath[BUFF_SIZE >> 3];
+  strcpy(RequestPath,header[1]);
   /*char* HttpVersion = header[2];*/
 #ifdef DEBUG
   printf("method:%s\n",method);
   printf("RequestPath:%s\n",RequestPath);
-  printf("HttpVersion:%s\n",HttpVersion);
+  /*printf("HttpVersion:%s\n",HttpVersion);*/
 #endif
   //处理method
   int cgi_flag = 0;
@@ -125,23 +128,26 @@ int Deal_Header(char* buf,int sock)
   {
     //记得读完请求
     ClearRequest(sock);
-    printf("清除结束\n");
     //发送响应行
-    char* ResponseRow = (char*)"HTTP/1.1 200 ok\n";
+    char* ResponseRow = (char*)"HTTP/1.1 404 ok\n";
     write(sock,ResponseRow,strlen(ResponseRow));
-  //发送响应头 TODO
-    char* ResponseHeader = (char*)"Server: Waykwin\nContent-Type: text/html;charst=UTF-8\n";
+    //发送响应头 TODO
+    char* ResponseHeader = (char*)"Server: Waykwin\nContent-Type: text/html;\n";
     write(sock,ResponseHeader,strlen(ResponseHeader));
     
     //发送空行
     write(sock,"\n",1);
 
     //正文处理
-    sprintf(RequestPath,"./WWW%s",RequestPath);
+    char tmpbuf[BUFF_SIZE >> 3] ;
+    strcpy(tmpbuf,RequestPath);
+
+    sprintf(RequestPath,"./WWW%s",tmpbuf);
+    /*printf("RequestPath: %s\n",RequestPath);*/
     if(strcasecmp(RequestPath,"./WWW/") == 0  )
     {
       //打开index.html 发送该文件
-      int index_fd = open("./WWW/index.html",O_RDONLY);
+      int index_fd = open("/home/waykwin/WorkSpace/OS/Internet/HTTP/WWW/index.html",O_RDONLY);
       if(index_fd < 0)
       {
         perror("index_fd error \n");
@@ -154,13 +160,13 @@ int Deal_Header(char* buf,int sock)
 
       if(sendfile(sock,index_fd,0,file_stat.st_size)  < 0)
         perror("sendfile:");
+      /*printf(" 发送完毕\n");*/
     }
     else 
     {
       //指定文件 TODO
 
     }
-    printf(" 发送完毕\n");
     
   }
 ERROR:
@@ -173,9 +179,13 @@ int get_line(int sock,char buf[],int length)
   char c = 'a';
   int i = 0;
   int ret;
-  while(c != '\n' &&i < length - 1)
+  while(( ret = recv(sock,&c,1,0)> 0  )&&i < length - 1)
   {
-    ret = recv(sock,&c,1,0)> 0 ;
+    if(c == '\n')
+    {
+      buf[i++] = c;
+      break;
+    }
     if( c == '\r' )
     {
       if((ret = recv(sock,&c,1,MSG_PEEK))> 0)
@@ -198,7 +208,7 @@ int get_line(int sock,char buf[],int length)
 }
 int deal_msg(int sock)
 {
-  /*SetNoBlock(sock);*/
+  SetNoBlock(sock);
   char buf[BUFF_SIZE]; 
 #ifdef DEBUG
   while(1)
@@ -231,6 +241,7 @@ int deal_sock(int sock, struct sockaddr_in* clinet_addr,int listen_sock)
     close(sock);
     wait(NULL);
   }
+  return 1;
 }
 int main()
 {

@@ -4,24 +4,44 @@
 #include<sys/wait.h>
 #include<string.h>
 #include<stdlib.h>
+#include<signal.h>
 /*#define N 30*/
 //fork
 int main()
 {
-    pid_t pid[3];
-    int u = 0;
-    for(; i<3; i++)
+  int pid = fork();
+  if(pid == 0)
+  {
+    while(1)
     {
-        if ( pid[i] == 0 )
-        {
-            printf (" im children  pid : %d,my father is %d \n",getpid(),getppid());
-        }
-        else if (pid[i] > 0)
-        {
-            printf ("im parent my id : %d,my child is %d\n",getpid(),pid[i]);
-            sleep(3);
-        }
+      printf("im child \n");
+      sleep(1);
     }
+  }
+  else 
+  {
+    while(1)
+    {
+      
+      printf(" im father\n");
+      sleep(1);
+      kill(9);
+    }
+  }
+    /*pid_t pid[3];*/
+    /*int u = 0;*/
+    /*for(; i<3; i++)*/
+    /*{*/
+        /*if ( pid[i] == 0 )*/
+        /*{*/
+            /*printf (" im children  pid : %d,my father is %d \n",getpid(),getppid());*/
+        /*}*/
+        /*else if (pid[i] > 0)*/
+        /*{*/
+            /*printf ("im parent my id : %d,my child is %d\n",getpid(),pid[i]);*/
+            /*sleep(3);*/
+        /*}*/
+    /*}*/
     /*int a = 100;*/
     /*pid_t pid = fork();*/
     /*if ( pid == 0  )*/

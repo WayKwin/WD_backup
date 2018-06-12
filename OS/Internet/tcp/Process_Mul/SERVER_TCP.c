@@ -83,19 +83,19 @@ int main(int argc,char* argv[])
      ser_addr.sin_family = AF_INET;
      ser_addr.sin_port = htons(atoi(argv[2]));
      ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    int listen_sock = socket( AF_INET, SOCK_STREAM,  0);
-    if( listen_sock < 0 )
+    int sock = socket( AF_INET, SOCK_STREAM,  0);
+    if( sock < 0 )
     {
         printf("socket error \n");
         return 2;
     }
-    if( bind(listen_sock, (struct sockaddr*)&ser_addr,
+    if( bind(sock, (struct sockaddr*)&ser_addr,
       sizeof(ser_addr) ) < 0 )
     {
         printf("bind error \n");
         return 3;
     }
-    int ret = listen(listen_sock, 2);
+    int ret = listen(sock, 2);
     if(ret != 0)
     {
         printf("listen error \n");
@@ -106,7 +106,7 @@ int main(int argc,char* argv[])
         struct sockaddr_in clinet_addr;
         socklen_t len = sizeof(clinet_addr);
         //一旦有建立连接完成的 套接字,就为其开辟进程
-        int clinet_sock = accept(listen_sock, \
+        int clinet_sock = accept(sock, \
                 (struct sockaddr*)&clinet_addr, &len);
         if( clinet_sock < 0 )
         {
@@ -114,7 +114,7 @@ int main(int argc,char* argv[])
             continue;
         }
         //传入listen_sock 是为了子进程关闭
-        deal_sock(clinet_sock, &clinet_addr,listen_sock);
+        deal_sock(clinet_sock, &clinet_addr,sock);
     }
 
 }
