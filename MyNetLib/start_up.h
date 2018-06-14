@@ -5,7 +5,7 @@
  */
 #include<memory>
 #include<string>
-namespace 
+namespace netlib
 {
   class StartUpLoop
   {
