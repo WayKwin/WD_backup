@@ -50,6 +50,18 @@ int ClearRequest(int sock)
   }
   return ret;
 }
+int ClearHeader(int sock)
+{
+  char buf[BUFF_SIZE];
+  int ret = 0;
+  while(strcmp(buf,"\n") != 0)
+  {
+    ret = get_line(sock,buf,sizeof(buf));
+    printf("%s",buf);
+    fflush(stdout);
+  }
+  return 1;
+}
 int Deal_Header(char* buf,int sock)
 {
   /*char* method = NULL;*/
@@ -95,7 +107,7 @@ int Deal_Header(char* buf,int sock)
   //处理method
   int cgi_flag = 0;
   char* RequestParameters;
-  //请求应该是忽略大小写的
+  //请求应该,4忽略大小写的
   if(strcasecmp(method,"GET") == 0)
   {
    for(i = 0; RequestPath[i] != '\0'; i++)
@@ -122,14 +134,14 @@ int Deal_Header(char* buf,int sock)
   if(cgi_flag == 1)
   {
     //TODO cgi
-    
   }
   else 
   {
-    //记得读完请求
-    ClearRequest(sock);
+    // 封装函数 1. 无参get 和 有参cgi
+    //记得读完请求(wrong 读完报头首部)
+    ClearHeader(sock);
     //发送响应行
-    char* ResponseRow = (char*)"HTTP/1.1 404 ok\n";
+    char* ResponseRow = (char*)"HTTP/1.1 200 ok\n";
     write(sock,ResponseRow,strlen(ResponseRow));
     //发送响应头 TODO
     char* ResponseHeader = (char*)"Server: Waykwin\nContent-Type: text/html;\n";
@@ -156,8 +168,9 @@ int Deal_Header(char* buf,int sock)
       }
       //获取文件大小
       if(fstat(index_fd,&file_stat) < 0 )
+      {
         perror("fstat:\n");
-
+      }
       if(sendfile(sock,index_fd,0,file_stat.st_size)  < 0)
         perror("sendfile:");
       /*printf(" 发送完毕\n");*/
@@ -170,6 +183,8 @@ int Deal_Header(char* buf,int sock)
     
   }
 ERROR:
+  //TODO
+  EchoErrorCode(ErrorCode,sock);
   return ErrorCode;
   return 1; 
   //处理http版本

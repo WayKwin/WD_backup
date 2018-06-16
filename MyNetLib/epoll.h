@@ -10,6 +10,7 @@ namespace netlib
   class Epoll 
   {
     public:
+      //阻塞
     Epoll() = default;
     Epoll(int MaxSize);
     ~Epoll();

@@ -1,11 +1,17 @@
 #include<iostream>
 #include<list>
 #include<deque>
+#include<stack>
 using namespace::std;
 list<deque<int> > l;
+
 deque<int> q1,q2;
+
+
 int main()
 {
+
+  stack<int> s;
   int a = 10;
   int &b  = a;
   int c = b;

@@ -1,0 +1,4 @@
+producta 50
+productb 20
+productc 40
+productd 80

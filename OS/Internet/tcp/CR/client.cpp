@@ -44,6 +44,8 @@ int main(int argc,char* argv[])
   if(connect(sockfd,(struct sockaddr*) &service_address,sizeof(service_address)) < 0)
   {
     close(sockfd);
+    printf("connect error \n");
+    exit(1);
   }
 
   int efd = epoll_create(2);
@@ -55,7 +57,7 @@ int main(int argc,char* argv[])
   evs[1].events = EPOLLIN | EPOLLRDHUP;
 
   epoll_ctl(efd,EPOLL_CTL_ADD,0,&evs[0]);
-  epoll_ctl(efd,EPOLL_CTL_ADD,1,&evs[1]);
+  epoll_ctl(efd,EPOLL_CTL_ADD,sockfd,&evs[1]);
 
   SetNonBlockingFd(sockfd);
   
@@ -79,11 +81,11 @@ int main(int argc,char* argv[])
 void service(struct epoll_event* evs,int length,int sockfd)
 {
   char  read_buf[BUFFER_SIZE];
+  char  write_buf[BUFFER_SIZE];
   int i = 0;
   int pipefd[2];
   int ret = pipe(pipefd);
   assert(ret != -1);
-  printf("comes here\n");
   for(; i < length; i++)
   {
     if(evs[i].events & EPOLLRDHUP)
@@ -98,10 +100,16 @@ void service(struct epoll_event* evs,int length,int sockfd)
       {
          printf("please enter :");
          fflush(stdout);
-         int size = splice(0,NULL,pipefd[1],NULL,BUFSIZ,SPLICE_F_MORE | SPLICE_F_MOVE); 
-         size = splice(pipefd[0],NULL,sockfd,NULL,BUFSIZ,SPLICE_F_MORE | SPLICE_F_MOVE); 
+         read(0,write_buf,sizeof(write_buf) - 1);
+         write(sockfd,write_buf,sizeof(write_buf) - 1);
+         //int size = splice(0,NULL,pipefd[1],NULL,BUFSIZ,SPLICE_F_MORE | SPLICE_F_MOVE); 
+         //size = splice(pipefd[0],NULL,sockfd,NULL,BUFSIZ,SPLICE_F_MORE | SPLICE_F_MOVE); 
+         //if(size < 0)
+         //{
+           //perror("splice:");
+         //}
       }
-      else if(evs[i].data.fd == sockfd)
+     if(evs[i].data.fd == sockfd)
       {
         printf("in 文件描述符 %d\n",evs[i].data.fd);
         read_buf[0] = 0;

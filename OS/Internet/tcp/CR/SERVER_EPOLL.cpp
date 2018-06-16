@@ -9,9 +9,10 @@
 #include<sys/wait.h>
 #include<sys/epoll.h>
 #include<fcntl.h>
+#include<list>
+using namespace::std;
 //工作在et模式下
 //所有文件描述符都必须变为 非阻塞
-
 int startUp(char* port)
 {
   struct sockaddr_in locate;
@@ -68,9 +69,7 @@ void ProcesConnect(int efd,int listen_sock)
     socklen_t sockaddr_len = sizeof(clinet);
     int sock = accept(listen_sock,(struct sockaddr*)&clinet,(socklen_t*)&sockaddr_len);
     if(sock< 0)
-    {
       break;
-    }
     char IPBuf[20];
     inet_ntop(AF_INET, (const void *)&clinet.sin_addr, \
              IPBuf,sizeof(IPBuf));
@@ -80,12 +79,12 @@ void ProcesConnect(int efd,int listen_sock)
     SetNoBlock(sock);
     struct epoll_event ev = SetEvent(sock,EPOLLIN,1024); 
     printf(" connection sock fd : %d\n",sock);
+
     epoll_ctl(efd,EPOLL_CTL_ADD, sock,&ev);
   }
 }
 ssize_t ReadNoBlock(Buffer* buf_info)
 {
-  /*printf(" frist read fd: %d",buf_info->fd);*/
   int total_read = 0;
   char* buffer = buf_info->buf;
   int fd = buf_info->fd;
@@ -95,7 +94,8 @@ ssize_t ReadNoBlock(Buffer* buf_info)
   {
     ssize_t ret = read(fd,buffer+total_read,capacity-total_read - 1);  
      total_read += ret;
-     //大于capacity就越界了?
+     //大于capacity就越界了
+     //读不满就表明读完了
      if(ret < capacity-total_read - 1)
      {
        break;
@@ -103,6 +103,7 @@ ssize_t ReadNoBlock(Buffer* buf_info)
   }
   return total_read;
 }
+
 void  service(int efd,struct epoll_event* evs,int length,int listen_sock)
 {
   int i = 0;
@@ -158,10 +159,11 @@ void  service(int efd,struct epoll_event* evs,int length,int listen_sock)
     if(evs[i].events & EPOLLOUT)
     {
       //写事件
-      printf(" This step TODO \n");
+      
     }
   }
 }
+
 int main(int argc,char* argv[])
 {
   if(argc != 2)
