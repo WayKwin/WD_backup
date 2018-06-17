@@ -4,20 +4,20 @@
 using namespace std;  
 #include<assert.h>  
   
-void Combination(char *string ,int number,vector<char> &result);  
+void Combination(char *str ,int number,vector<char> &result);  
   
-void Combination(char *string)  
+void Combination(char *str)  
 {  
-    assert(string != NULL);  
+    assert(str != NULL);  
     vector<char> result;  
-    int i , length = strlen(string);  
+    int i , length = strlen(str);  
     for(i = 1 ; i <= length ; ++i)  
-        Combination(string , i ,result);  
+        Combination(str , i ,result);  
 }  
   
-void Combination(char *string ,int number , vector<char> &result)  
+void Combination(char *str ,int number , vector<char> &result)  
 {  
-    assert(string != NULL);  
+    assert(str != NULL);  
     if(number == 0)  
     {  
             static int num = 1;  
@@ -29,19 +29,19 @@ void Combination(char *string ,int number , vector<char> &result)
             printf("\n");  
             return ;  
         }  
-    if(*string == '\0')  
+    if(*str == '\0')  
         return ;  
-    //有string的组合
-    result.push_back(*string);  
-    Combination(string + 1 , number - 1 , result);  
-    // 没有 *string 的组合
+    //有str的组合
+    result.push_back(*str);  
+    Combination(str + 1 , number - 1 , result);  
+    // 没有 *str 的组合
     result.pop_back();  
-    Combination(string + 1 , number , result);  
+    Combination(str + 1 , number , result);  
 }  
   
 int main(void)  
 {  
-    char str[] = "abc";  
+    char str[] = "abcd";  
     Combination(str);  
     return 0;  
 }  
