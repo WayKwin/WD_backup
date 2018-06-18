@@ -3,7 +3,7 @@
 
 /** 
  * @brief  默认执行et, 所有文件描述符 非阻塞
- *  初始化时间:epollin
+ *  初始化事件:epollin
  */
 namespace netlib
 {
