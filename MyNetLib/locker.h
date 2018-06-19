@@ -2,9 +2,11 @@
 #define LOCKER_H
 #include<pthread.h>
 #include<exception>
+#include<list>
 #include<semaphore.h>
 // TODO
 // 是否要单例模式?线程安全?
+
 class sem 
 {
   public:
@@ -54,6 +56,10 @@ public:
   bool lock()
   {
     return pthread_mutex_lock(&l_mutex);
+  }
+  bool unlock()
+  {
+    return pthread_mutex_unlock(&l_mutex);
   }
 private:
   pthread_mutex_t  l_mutex;
