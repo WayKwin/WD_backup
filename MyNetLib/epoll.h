@@ -5,8 +5,6 @@
  * @brief  默认执行et, 所有文件描述符 非阻塞
  *  初始化事件:epollin
  */
-namespace netlib
-{
   class Epoll 
   {
     public:
@@ -34,4 +32,3 @@ namespace netlib
     //能不能定义一个结构体, 注册修改事件都用这一个结构体
     static struct epoll_event ev;
   };
-}
