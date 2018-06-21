@@ -37,7 +37,7 @@ class HttpConnec
   enum PARSE_STATUS{PARSE_LINE,PARSE_HEADER,PARSE_CONTENT};
   enum RESPOEND_TYPE{OK=0};
     //HTTP的状态码
-  enum HTTP_CODE{LOCAL_REQUEST,BAD_REQUEST,OK_REQUEST};
+  enum HTTP_CODE{LOCAL_REQUEST=0,BAD_REQUEST,OK_REQUEST};
     //CGI处理函数 传入 REQUESET_TYPE cgi另外写一个类
     //TODO
 
@@ -66,12 +66,13 @@ class HttpConnec
   int m_start_line;
   char m_read_buf[READ_BUFFER_SIZE];
 
-  //转换状态
+  //分析状态机的转换状态
   PARSE_STATUS m_parse_status;
 
   //头部分析函数
   HTTP_CODE parse_request();
   HTTP_CODE parse_request_line(char* text);
+  //已经处理POST 但是没有正文的情况
   HTTP_CODE parse_header(char* text);
   HTTP_CODE parse_content(char* text);
 
@@ -89,7 +90,11 @@ class HttpConnec
   //TODO
   char* m_host;
 
-
+  // 客户机请求状态
+  HTTP_CODE  m_request_syntax_check;
+  HTTP_CODE request_check();
+  //处理请求函数
+  HTTP_CODE do_request(); 
 
   //写 TODO
   public:

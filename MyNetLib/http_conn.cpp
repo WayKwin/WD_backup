@@ -146,29 +146,36 @@ HttpConnec::HTTP_CODE HttpConnec::parse_request()
   {
     text = getline();
     m_start_line = m_handled_idx;
-
-    switch(m_parse_status)
-    {
-      case LOCAL_REQUEST:  
-        ret = parse_request_line(text);
-        if(ret == BAD_REQUEST)
-          return BAD_REQUEST;
-          break;
-      case 
-
-    }
-    
-    
     //if(text[0] == '\0')
     //{
       //printf("http request:空行\n");
     //}
     //else printf("http request:%s\n",text);
+
+    switch(m_parse_status)
+    {
+      case PARSE_LINE:  
+        ret = parse_request_line(text);
+        if(ret == BAD_REQUEST)
+          return BAD_REQUEST;
+          break;
+      case PARSE_HEADER:
+          ret = parse_header(text);
+          if(ret == OK_REQUEST)
+            return OK_REQUEST;
+          break;
+      case PARSE_CONTENT:
+          ret = parse_content(text);
+          if(ret == OK_REQUEST)
+            return OK_REQUEST;
+          else if(ret == BAD_REQUEST)
+            return BAD_REQUEST;
+          break;
+    }
   }
-  printf(" accpet over\n");
-  //TODO
   return LOCAL_REQUEST;
 }
+
 HttpConnec::HTTP_CODE HttpConnec::parse_request_line(char* text)
 {
   // 坑: strtok虽然方便, 但是内部用了静态变量,不适合多线程版
@@ -213,7 +220,7 @@ HttpConnec::HTTP_CODE HttpConnec::parse_request_line(char* text)
 
 
   // 处理版本 
-  if(strcasecmp(m_version,"HTTP/1.1") != 0 || strcasecmp(m_version,"HTTP/1.0") != 0 )
+  if(( strncasecmp(m_version,"HTTP/1.1",8) != 0  ) && ( strncasecmp(m_version,"HTTP/1.0",8) != 0  ))
   {
     printf("not  supported http versoin\n");
     return BAD_REQUEST;
@@ -237,10 +244,11 @@ HttpConnec::HTTP_CODE HttpConnec::parse_header(char* text)
       return LOCAL_REQUEST;
     }
     //POST但是没有正文,出错
-    if(m_content_length == 0 && m_method == POST)
+   else if(m_content_length == 0 && m_method == POST)
     {
       return BAD_REQUEST;
     }
+    else  
     return OK_REQUEST;
   }
 
@@ -262,11 +270,30 @@ HttpConnec::HTTP_CODE HttpConnec::parse_header(char* text)
   
   return LOCAL_REQUEST;
 }
-
 HttpConnec::HTTP_CODE HttpConnec::parse_content(char* text)
 {
   //CGI TODO
   printf("i got content%s\n",text);
   return OK_REQUEST;
 }
+
+HttpConnec::HTTP_CODE HttpConnec::request_check()
+{
+  m_request_syntax_check = parse_request();
+  if(m_request_syntax_check != OK_REQUEST)
+  {
+    return BAD_REQUEST;
+  }
+  else 
+  {
+    return do_request();
+  }
+}
+HttpConnec::HTTP_CODE HttpConnec::do_request()
+{
+    //printf("requset_syntax right\n");
+    //return OK_REQUEST;
+    
+}
+
 
