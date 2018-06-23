@@ -3,6 +3,7 @@
 #include"threadpool.h"
 #include<string.h>
 #include<strings.h>
+#include<stdarg.h>
 using namespace::std;
 //what fuck
 template<typename T> void test(T a)
@@ -21,7 +22,17 @@ struct events
   }
 };
 int events::a= 0;
-int main()
+void test_threadpool()
+{
+  //events a;
+  //ThreadPool<events>* tp = ThreadPool<events>::GetThreadPool();
+  //printf(" main thread waiting \n");
+  //tp->SetEvents(&a);
+  //tp->SetEvents(&a);
+  //tp->SetEvents(&a);
+  //tp->SetEvents(&a);
+}
+void test_strpbrk()
 {
   char text[1024] = "GET /usr/lcoal.jpg http/1.1";
 
@@ -43,17 +54,30 @@ int main()
   if(strcasecmp(version,"HTTP/1.1") != 0)
     printf("not http/1.1\n");
   //cur = strpbrk(url," \t");
-  //*cur++ = '\0';
+  /[>cur++ = '\0';
   printf("%s\n",method);
   printf("%s\n",url);
   printf("%s\n",version);
   
-  //events a;
-  //ThreadPool<events>* tp = ThreadPool<events>::GetThreadPool();
-  //printf(" main thread waiting \n");
-  //tp->SetEvents(&a);
-  //tp->SetEvents(&a);
-  //tp->SetEvents(&a);
-  //tp->SetEvents(&a);
+}
+int mon_log(char* format,...)
+{
+  char str_tmp[50];
+  int i = 0;
+  va_list vArgList;
+  va_start(vArgList,format);
+  i = vsnprintf(str_tmp,50,format,vArgList);
+  va_end(vArgList);
+  printf("%s",str_tmp);
+  return i;
+}
+void test_vsnprintf()
+{
+  int i = mon_log((char*)"%s,%d,%d,%d","asd",2,3,4);
+  printf("%d\n",i);
+}
+int main()
+{
+  test_vsnprintf();
   return 0;
 }

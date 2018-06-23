@@ -8,17 +8,20 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdarg.h>
 #include<sys/mman.h>
 #include <stdarg.h>
 #include <errno.h>
 #include<string.h>
 #include<unistd.h>
-#include<sys/types.h>
 #include<sys/epoll.h>
+#include<sys/stat.h>
 #include<fcntl.h>
 #include <errno.h>
 #include <arpa/inet.h>
 #include"locker.h"
+
+
 
 class HttpConnec 
 {
@@ -26,6 +29,8 @@ class HttpConnec
     HttpConnec()=default;
     ~HttpConnec()=default;
     void close_connec(bool readl_close = true);
+    void init(int sockfd,const sockaddr_in& addr);
+  private:
     void init();
   // HTTP的状态
   private:
@@ -37,7 +42,7 @@ class HttpConnec
   enum PARSE_STATUS{PARSE_LINE,PARSE_HEADER,PARSE_CONTENT};
   enum RESPOEND_TYPE{OK=0};
     //HTTP的状态码
-  enum HTTP_CODE{LOCAL_REQUEST=0,BAD_REQUEST,OK_REQUEST};
+  enum HTTP_CODE{LOCAL_REQUEST=0,OK_REQUEST=200,BAD_REQUEST = 400,FORBIDDEN_REQUEST=403,NOT_FOUND=404};
     //CGI处理函数 传入 REQUESET_TYPE cgi另外写一个类
     //TODO
 
@@ -49,9 +54,11 @@ class HttpConnec
   
   //epoll
   public:
-  int m_epollfd;
-  int m_user_count;
+  static int m_epollfd;
+  static int   m_user_count;
+  private:
   int m_sockfd;
+  sockaddr_in m_addr;
 
   
 
@@ -59,6 +66,7 @@ class HttpConnec
   //读取相关函数变量
   public:
   bool read();
+  private:
   READ_LINE_STATUS parse_line();
   char* getline(){return m_read_buf + m_start_line;}
   int m_handled_idx;
@@ -77,10 +85,13 @@ class HttpConnec
   HTTP_CODE parse_content(char* text);
 
   bool m_needCGI;
+  //GET CGI的参数
+  
 
   //关心的请求行字段
   //TODO CGI
   char* m_url;
+  bool check_url_parameter(char* );
   REQUSET_TYPE m_method;
   char* m_version; 
 
@@ -95,16 +106,47 @@ class HttpConnec
   HTTP_CODE request_check();
   //处理请求函数
   HTTP_CODE do_request(); 
+  
+  // 请求资源的分析
+  char m_request_file[MAX_FILE_NAME_LEN];
+  char* m_file_address;
+  struct stat m_file_stat; 
+
+  //io
+  struct iovec m_iv[2];
+  int m_iv_count;
+
+
+  // 映射内存
+  char* file_address = NULL;
+  void unmap();
+
+  // 相应处理
+ 
+  bool  add_response(const char* format, ...);
+  bool  add_status_line(HTTP_CODE status);
+  void   add_headers(int content_len);
+  bool  add_content_length(int content_len); 
+  bool  add_linger();
+  bool  add_blank_line();
+  // 在403 404 的时候用到
+  bool add_content(const char* content);
+  bool write_respone(HTTP_CODE ret);
+
+
+
 
   //写 TODO
   public:
+  bool write();
+  private:
+  char m_write_buf[ WRITE_BUFFER_SIZE ];
+  int m_write_idx;
 
 
-
-  
-
-
-  
-  
+  //封装回调
+  void process();
+ 
 };
+
 #endif
