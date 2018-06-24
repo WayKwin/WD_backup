@@ -1,37 +1,36 @@
 #include<iostream>
 #include<list>
-#include"threadpool.h"
 #include<string.h>
 #include<strings.h>
 #include<stdarg.h>
 using namespace::std;
 //what fuck
-template<typename T> void test(T a)
-{
-  list<T> b;
-  b.push_back(a);
-  cout<< b.front() << endl;
-}
-struct events 
-{
-  static int a;
-  void process()
-  {
-    a++; 
-    printf(" doing somethings,%d\n",a);
-  }
-};
-int events::a= 0;
-void test_threadpool()
-{
+//template<typename T> void test(T a)
+//{
+  //list<T> b;
+  //b.push_back(a);
+  //cout<< b.front() << endl;
+//}
+//struct events 
+//{
+  //static int a;
+  //void process()
+  //{
+    //a++; 
+    //printf(" doing somethings,%d\n",a);
+  //}
+//};
+//int events::a= 0;
+//void test_threadpool()
+//{
   //events a;
-  //ThreadPool<events>* tp = ThreadPool<events>::GetThreadPool();
+  //ThreadPool<events>* tp = new ThreadPool<events>;
   //printf(" main thread waiting \n");
   //tp->SetEvents(&a);
   //tp->SetEvents(&a);
   //tp->SetEvents(&a);
   //tp->SetEvents(&a);
-}
+//}
 void test_strpbrk()
 {
   char text[1024] = "GET /usr/lcoal.jpg http/1.1";
@@ -54,7 +53,7 @@ void test_strpbrk()
   if(strcasecmp(version,"HTTP/1.1") != 0)
     printf("not http/1.1\n");
   //cur = strpbrk(url," \t");
-  /[>cur++ = '\0';
+  //*cur++ = '\0';
   printf("%s\n",method);
   printf("%s\n",url);
   printf("%s\n",version);
@@ -78,6 +77,7 @@ void test_vsnprintf()
 }
 int main()
 {
-  test_vsnprintf();
+  test_strpbrk();
+  //test_threadpool();
   return 0;
 }

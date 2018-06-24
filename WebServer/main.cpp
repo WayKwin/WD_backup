@@ -1,6 +1,22 @@
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <cassert>
+#include <sys/epoll.h>
+
 #include"http_conn.h"
+#include"threadpool.cpp"
+#include"locker.h"
 
 #define PORT 8080
+#define MAX_FD 1024
+#define  MAX_EVENT_NUMBER 2048 
 
 int startup()
 {
@@ -45,23 +61,69 @@ void addsig(int sig,void(handler)(int),bool restart = true)
 int main()
 {
   addsig(SIGPIPE,SIG_IGN);
+  ThreadPool< HttpConnec>* tp
+    =  new ThreadPool<HttpConnec>; 
+  int epollfd = epoll_create(5);
+  assert(epollfd > 0);
+  HttpConnec::m_epollfd = epollfd;
+  //epoll就绪队列
+  struct epoll_event evs [MAX_EVENT_NUMBER];
+  HttpConnec* usrs = new HttpConnec[MAX_FD];
 
-  
+
+  assert(usrs);
   int listen_sock = startup(); 
+  addfd(epollfd,listen_sock,false);
+
+
     while(1)
     {
-        struct sockaddr_in clinet_addr;
-        socklen_t len = sizeof(clinet_addr);
-        int clinet_sock = accept(listen_sock, \
-                (struct sockaddr*)&clinet_addr, &len);
-        
-        if( clinet_sock < 0 )
+      int number = epoll_wait(epollfd,evs,MAX_EVENT_NUMBER,-1);
+      // errno == EINTR 表示被中断而不是出错
+      if(number < 0 && errno != EINTR)
+      {
+          printf("epoll wait failure\n");
+          break;
+      }
+      int i = 0;
+      for(; i < number; i++)
+      {
+        int sockfd = evs[i].data.fd;
+        if(sockfd == listen_sock)
         {
-            printf(" accept error \n");
-            break;
+          struct sockaddr_in clinet_addr;
+          socklen_t len = sizeof(clinet_addr);
+          int clinet_sock = accept(listen_sock, \
+                  (struct sockaddr*)&clinet_addr, &len);
+          assert(clinet_sock>= 0);
+          if(HttpConnec::m_user_count >= MAX_FD)
+          {
+            printf(" Server Busy\n");
             continue;
+          }
+
+          usrs[clinet_sock].init(clinet_sock,clinet_addr); 
         }
-        //
+        else if(evs[i].events & (EPOLLRDHUP | EPOLLHUP|EPOLLERR))
+        {
+          usrs[sockfd].close_connec();
+        }
+        else if(evs[i].events & EPOLLIN)
+        {
+          usrs[sockfd].read();
+          tp->SetEvents(usrs+sockfd);
+        }
+        else if(evs[i].events & EPOLLOUT)
+        {
+          if(!usrs[sockfd].write())
+          {
+            usrs[sockfd].close_connec();
+          }
+        }
+      }
     }
+    close(listen_sock);
+    close(epollfd);
+    delete [] usrs;
     return 0;
 }

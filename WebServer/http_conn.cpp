@@ -20,6 +20,15 @@
  * 但在浏览器未接收到任何数据
  * 
  */
+/*
+ * 现象表明http在解析htlm文档的时候会将所需资源再次发起http请求
+ * 
+ * 
+ * 
+ * 
+ */
+int HttpConnec::m_epollfd;
+int HttpConnec::m_user_count;
 const char* ok_200_title = "OK";
 const char* error_400_title = "Bad Request";
 const char* error_400_form = "Your request has bad syntax or is inherently impossible to satisfy.\n";
@@ -87,17 +96,16 @@ void HttpConnec::init(int sockfd,const sockaddr_in& addr)
 }
 void HttpConnec::init()
 {
-  // init read 
-  m_handled_idx = 0;
-  m_read_indx = 0;
-  // stat_line = (在link_ok 后)m_handled_indx
-  // 用来和handled_index 实现getline();
-  m_start_line = 0;
-  m_epollfd = -1;
-  memset(m_read_buf,0,sizeof(m_read_buf));
+    // init read 
+    m_handled_idx = 0;
+    m_read_indx = 0;
+    // stat_line = (在link_ok 后)m_handled_indx
+    // 用来和handled_index 实现getline();
+    m_start_line = 0;
+    memset(m_read_buf,0,sizeof(m_read_buf));
 
-  // int enum
-  m_method = GET;
+    // int enum
+    m_method = GET;
 
 
   //init write
@@ -347,7 +355,14 @@ HttpConnec::HTTP_CODE HttpConnec::request_check()
 //TODO
 bool HttpConnec::check_url_parameter(char* mrl)
 {
-  return false;
+  //在处理request line 使用strpbrk比较字符串
+  char* cur = strchr(mrl,'?');
+  if(cur == NULL)
+    return false;
+  *cur++ = '\0';
+  m_cgi_parameter = cur;
+  printf("m_cgi_parameter:%s\n",m_cgi_parameter);
+  return true;
 }
 HttpConnec::HTTP_CODE HttpConnec::do_request()
 {
@@ -366,12 +381,15 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
     {
 
     }
+    printf("request_url:%s\n",m_url);
     memset(m_request_file,0,sizeof(m_request_file));
+
     sprintf(m_request_file,"%s%s",DocRoot,m_url);
     if(strcmp(m_request_file,"./www/") == 0)
     {
       strcat(m_request_file,"index.html");
     }
+    printf("m_request_file:%s\n",m_request_file);
     if(stat(m_request_file,&m_file_stat) < 0)
     {
       return NOT_FOUND;
@@ -437,12 +455,10 @@ bool HttpConnec::add_status_line( HTTP_CODE status)
 // 文件的content_len
 void HttpConnec::add_headers(int content_len)
 {
-          
-        
-         add_content_length(content_len) ;
-         add_linger(); 
-         add_blank_line();
-         //这里之前是返回值bool 但没有返回值 会出现 非法指令错误
+ add_content_length(content_len) ;
+ add_linger(); 
+ add_blank_line();
+ //这里之前是返回值bool 但没有返回值 会出现 非法指令错误
 }
 bool HttpConnec::add_content_length(int content_len)
 {
@@ -480,38 +496,39 @@ bool HttpConnec::write()
     //写的时候肯定是就绪事件
     while( 1 )
     {
-        temp = writev( m_sockfd, m_iv, m_iv_count );
-        printf (" send %d bytes data to client \n",temp);
-        if ( temp <= -1 )
-        {
-            if( errno == EAGAIN )
-            {
-                modfd( m_epollfd, m_sockfd, EPOLLOUT );
-                printf("EAGAIN,send over\n");
-                return true;
-            }
-            unmap();
-            return false;
-        }
+          temp = writev( m_sockfd, m_iv, m_iv_count );
+          printf (" send %d bytes data to client \n",temp);
+          if ( temp <= -1 )
+          {
+              if( errno == EAGAIN )
+              {
+                //再次尝试读取
+                  modfd( m_epollfd, m_sockfd, EPOLLOUT );
+                  printf("EAGAIN,send over\n");
+                  return true;
+              }
+              unmap();
+              return false;
+          }
 
-        bytes_to_send -= temp;
-        bytes_have_send += temp;
-          //这里假设 temp返回的就是 一次完整的写入
-        if ( bytes_to_send <= bytes_have_send )
-        {
-            unmap();
-            if( m_linger )
-            {
-                printf("keep-alive,send over\n");
-                init();
-                modfd( m_epollfd, m_sockfd, EPOLLIN );
-                return true;
-            }
-            else
-            {
-                printf("not keep-alive,send over\n");
-                modfd( m_epollfd, m_sockfd, EPOLLIN );
-                return false;
+          bytes_to_send -= temp;
+          bytes_have_send += temp;
+            //这里假设 temp返回的就是 一次完整的写入
+          if ( bytes_to_send <= bytes_have_send )
+          {
+              unmap();
+              if( m_linger )
+              {
+                  printf("keep-alive,send over\n");
+                  init();
+                  modfd( m_epollfd, m_sockfd, EPOLLIN );
+                  return true;
+              }
+              else
+              {
+                  printf("not keep-alive,send over\n");
+                  modfd( m_epollfd, m_sockfd, EPOLLIN );
+                  return false;
             } 
         }
     }
@@ -534,6 +551,11 @@ bool HttpConnec::write_respone(HTTP_CODE ret)
     break;
         case NOT_FOUND:
         {
+         printf("=========================\n");
+         printf("以下是服务响应信息\n");
+         printf("%s",m_write_buf);
+         printf("%s",m_file_address);
+         printf("=========================\n");
           add_status_line(NOT_FOUND);
           add_headers(strlen(error_404_form));
           if ( ! add_content( error_404_form ) )
@@ -557,7 +579,7 @@ bool HttpConnec::write_respone(HTTP_CODE ret)
          add_status_line(OK_REQUEST);
          add_headers(m_file_stat.st_size);
          printf("=========================\n");
-         printf("以下是服务响应信息\n");
+         printf("以下是服务响应信息,注意以c风格字符串,所以会有乱码\n");
          printf("%s",m_write_buf);
          printf("%s",m_file_address);
          printf("=========================\n");

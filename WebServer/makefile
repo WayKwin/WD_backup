@@ -1,5 +1,6 @@
 .PHONY:clean
-http:main.cpp http_conn.cpp  
-	clang++ $^ -o $@  -g
+
+http:locker.cpp http_conn.cpp  threadpool.cpp main.cpp 
+	clang++ $^ -o $@  -g -lpthread
 clean:
 	rm -rf http

@@ -1,26 +1,23 @@
-#ifndef HTTPCONNECTION_H
-#define HTTPCONNECTION_H
-#include<signal.h>
-#include<sys/types.h>
-#include<sys/socket.h>
+#pragma once
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/epoll.h>
+#include <fcntl.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
-#include<assert.h>
-#include<stdlib.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<stdarg.h>
-#include<sys/mman.h>
+#include <arpa/inet.h>
+#include <assert.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 #include <stdarg.h>
 #include <errno.h>
-#include<string.h>
-#include<unistd.h>
-#include<sys/epoll.h>
-#include<sys/stat.h>
-#include<fcntl.h>
-#include <errno.h>
-#include <arpa/inet.h>
+#include<string>
 #include"locker.h"
-
 
 
 class HttpConnec 
@@ -86,6 +83,7 @@ class HttpConnec
 
   bool m_needCGI;
   //GET CGI的参数
+  char* m_cgi_parameter=NULL;
   
 
   //关心的请求行字段
@@ -143,10 +141,8 @@ class HttpConnec
   char m_write_buf[ WRITE_BUFFER_SIZE ];
   int m_write_idx;
 
-
+  public:
   //封装回调
   void process();
  
-};
-
-#endif
+  };
