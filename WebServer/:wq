@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include<iostream>
 #include<list>
 #include<string.h>
 #include<unistd.h>
@@ -79,58 +79,44 @@ void test_vsnprintf()
   int i = mon_log((char*)"%s,%d,%d,%d","asd",2,3,4);
   printf("%d\n",i);
 }
-//void test_env()
-//{
-  ////putenv("hello");
-  //setenv("hello","world",0);
-  //int pid = fork();
-  //if(pid  == 0)
-  //{
-    //printf("%s\n",getenv("hello"));
-  //}
-  //else 
-  //{
-    //printf("%s\n",getenv("hello"));
-  //}
-//}
+void test_env()
+{
+  //putenv("hello");
+  setenv("hello","world",0);
+  int pid = fork();
+  if(pid  == 0)
+  {
+    printf("%s\n",getenv("hello"));
+  }
+  else 
+  {
+    printf("%s\n",getenv("hello"));
+  }
+}
 void test_socketpairt()
 {
   int sockfd[2]; 
+
   int ret = socketpair(AF_LOCAL,SOCK_STREAM,0,sockfd);
   assert(ret >= 0);
-  //dup2(sockfd[0],fileno(stdin));
-  //dup2(sockfd[1],fileno(stdout));
+  dup2(sockfd[0],fileno(stdin));
+  dup2(sockfd[1],fileno(stdout));
   int pid  = fork();
   assert(pid >= 0);
   if(pid == 0)
   {
-    close(sockfd[0]);
-    //dup2(fileno(stdout),sockfd[1]);
-    dup2(sockfd[1],fileno(stdout));
-    //printf("%d\n",sockfd[1]);
-    char* file = "./cgi";
-    char* argv[] = {file,NULL};
-    if(execvp(file,argv) < 0)
-    {
-      printf("execv error \n");
-    }
+    printf("hello father\n"); 
+    char buf[30];
+    recv(fileno(stdin),buf,30,0);
+
   }
-  else if(pid > 0)
+  if(pid > 0)
   {
-    close(sockfd[1]);
-    char recvbuf[2048];
-    int ret = recv(sockfd[0],recvbuf,sizeof(recvbuf),0);
-    if(ret < 0)
-    {
-      printf("erorr\n");
-      return ;
-    }
-    if(ret == 0)
-    {
-      printf("close \n");
-    }
-      printf(" in father:%s",recvbuf);
+    printf(" hello son\n");
+    char buf[30];
+    recv(fileno(stdin),buf,30,0);
   }
+
 }
 int main()
 {

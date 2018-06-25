@@ -25,6 +25,14 @@
  * 
  * 
  * 
+ * TODO
+ * cgi 服务器,设想:
+ * 进程池 模版参数<T,G> 对应insert和 search俩个类
+ * 分别对应两个事件队列,两个信号量
+ *  在append操作时,通过判断 CGI请求程序加入指定的事件队列
+ *  一部分进程只能PV insert(只处理insert)
+ *  另一部进程处理search
+ *  (如何在两个进程之间传递文件描述符)
  * 
  */
 int HttpConnec::m_epollfd;
@@ -336,10 +344,10 @@ HttpConnec::HTTP_CODE HttpConnec::parse_header(char* text)
 HttpConnec::HTTP_CODE HttpConnec::parse_content(char* text)
 {
   //CGI TODO
+  m_content = text;
   printf("i got content%s\n",text);
   return OK_REQUEST;
 }
-
 HttpConnec::HTTP_CODE HttpConnec::request_check()
 {
   m_request_syntax_check = parse_request();
@@ -361,7 +369,7 @@ bool HttpConnec::check_url_parameter(char* mrl)
     return false;
   *cur++ = '\0';
   m_cgi_parameter = cur;
-  printf("m_cgi_parameter:%s\n",m_cgi_parameter);
+  //printf("m_cgi_parameter:%s\n",m_cgi_parameter);
   return true;
 }
 HttpConnec::HTTP_CODE HttpConnec::do_request()
@@ -377,11 +385,7 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
         m_needCGI = check_url_parameter(m_url); 
       }
    }
-    if(m_needCGI)
-    {
-
-    }
-    printf("request_url:%s\n",m_url);
+    //printf("request_url:%s\n",m_url);
     memset(m_request_file,0,sizeof(m_request_file));
 
     sprintf(m_request_file,"%s%s",DocRoot,m_url);
@@ -389,7 +393,20 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
     {
       strcat(m_request_file,"index.html");
     }
-    printf("m_request_file:%s\n",m_request_file);
+    //printf("m_request_file:%s\n",m_request_file);
+    //走在这里 已经将url拼接好
+    if(m_needCGI)
+    {
+      //CGI函数  
+      bool ret = CGIentry(); 
+      if(!ret)
+      {
+        return BAD_REQUEST;
+      }
+      return OK_REQUEST;
+    }
+    else 
+    {
     if(stat(m_request_file,&m_file_stat) < 0)
     {
       return NOT_FOUND;
@@ -401,17 +418,71 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
     int fd = open(m_request_file,O_RDONLY); 
     m_file_address = (char*)mmap(0, m_file_stat.st_size,PROT_READ,MAP_PRIVATE,fd,0);
   close(fd);
+    }
     //printf("%s",m_file_address);
   return  OK_REQUEST;
 }
+bool HttpConnec::CGIentry()
+{
+  if(m_cgi_parameter == NULL)
+    return false;
+  if(m_method != POST && m_method != GET)
+  {
+    return false;
+  }
+  // 需要运行的的CGI在 url中
+  setenv("QUERY_STRING",m_cgi_parameter,0);
+  setenv("METHOD",m_method == POST? "POST":"GET",0);
+  
+  
+  int sockfd[2];
+  
+  int ret = socketpair(AF_LOCAL,SOCK_STREAM,0,sockfd);
+  assert(ret >= 0);
+  int pid = fork();
+  assert(pid >= 0);
+  
+  if(pid == 0)
+  {
+    close(m_epollfd);
+    close(m_sockfd);
+    close(sockfd[0]);
+    dup2(sockfd[1],fileno(stdout));
+    char* argv[] = {m_request_file,NULL};
+    execvp(m_request_file,argv);
+  }
+  else if(pid >0)
+  {
+    close(sockfd[1]);
+    if(m_method == POST)
+    {
+      send(sockfd[0],m_content,m_content_length,0);
+    }
+    int ret = recv(sockfd[0],m_cgi_address,sizeof(m_cgi_address),0);
+    if(ret < 0)
+    {
+      printf("CGI recvError\n");
+      return false;
+    }
+    if(ret == 0)
+    {
+      printf("CGI close\n");
+      return false;
+    }
+    m_cgi_address[ret] = 0;
+    //printf("已经读取字符:%d\n",ret);
+    //printf("m_cgi_address:%s\n",m_cgi_address);
+    return true;
+  }
+}
+
 void HttpConnec::unmap()
 {
-  if(file_address)
+  if(m_file_address)
   {
-    munmap(file_address,m_file_stat.st_size);
-    file_address = NULL;
+    munmap(m_file_address,m_file_stat.st_size);
+    m_file_address = NULL;
   }
-
 }
 // 都往wirtebuf中写入
 bool HttpConnec::add_response(const char* format,...)
@@ -576,18 +647,37 @@ bool HttpConnec::write_respone(HTTP_CODE ret)
        break;
    case OK_REQUEST:
        {
+
          add_status_line(OK_REQUEST);
-         add_headers(m_file_stat.st_size);
+         if(m_needCGI)
+         {
+           add_headers(strlen(m_cgi_address));
+         }
+         else 
+         {
+           add_headers(m_file_stat.st_size);
+         }
          printf("=========================\n");
-         printf("以下是服务响应信息,注意以c风格字符串,所以会有乱码\n");
+         printf("以下是服务响应信息,注意打印格式是c风格字符串,所以可能会有乱码\n");
          printf("%s",m_write_buf);
-         printf("%s",m_file_address);
-         printf("=========================\n");
 
          m_iv[0] .iov_base = m_write_buf;
          m_iv[0] .iov_len= m_write_idx;
-         m_iv[1] .iov_base = m_file_address;
-         m_iv[1] .iov_len= m_file_stat.st_size;
+         if(m_needCGI)
+         {
+           m_iv[1] .iov_base = m_cgi_address;
+           printf("father get respone: %s\n",m_cgi_address);
+           m_iv[1] .iov_len= strlen(m_cgi_address);
+           printf("%s\n",m_cgi_address);
+           printf("=========================\n");
+         }
+         else 
+         {
+           m_iv[1] .iov_base = m_file_address;
+           m_iv[1] .iov_len = m_file_stat.st_size;
+           printf("%s",m_file_address);
+           printf("=========================\n");
+         }
          m_iv_count = 2;
          return true;
        }
@@ -597,14 +687,14 @@ bool HttpConnec::write_respone(HTTP_CODE ret)
          return false;
        }
   }
-    m_iv[ 0 ].iov_base = m_write_buf;
-    m_iv[ 0 ].iov_len = m_write_idx;
+
+    m_iv[0].iov_base = m_write_buf;
+    m_iv[0].iov_len = m_write_idx;
     m_iv_count = 1;
     return true;
 }
 void HttpConnec::process()
 {
-
     write_respone(request_check()); 
     if(!write())
     {

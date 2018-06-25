@@ -48,6 +48,8 @@ class HttpConnec
   static const int MAX_FILE_NAME_LEN = 256; 
   static const int READ_BUFFER_SIZE = 2048; 
   static const int WRITE_BUFFER_SIZE= 2048; 
+  static const int CGI_RECV_SIZE = 2048;
+
   
   //epoll
   public:
@@ -81,23 +83,23 @@ class HttpConnec
   HTTP_CODE parse_header(char* text);
   HTTP_CODE parse_content(char* text);
 
-  bool m_needCGI;
-  //GET CGI的参数
-  char* m_cgi_parameter=NULL;
   
 
   //关心的请求行字段
-  //TODO CGI
+  
+  private:
   char* m_url;
-  bool check_url_parameter(char* );
   REQUSET_TYPE m_method;
   char* m_version; 
+  
 
+  private:
   //关心的请求头部字段
   int  m_content_length;
   bool m_linger;
   //TODO
   char* m_host;
+  
 
   // 客户机请求状态
   HTTP_CODE  m_request_syntax_check;
@@ -107,17 +109,25 @@ class HttpConnec
   
   // 请求资源的分析
   char m_request_file[MAX_FILE_NAME_LEN];
-  char* m_file_address;
   struct stat m_file_stat; 
+  char* m_content;
+  // 映射内存
+  char* m_file_address = NULL;
+  void unmap();
+
+  // CGI
+  bool m_needCGI;
+  char* m_cgi_parameter=NULL;
+  bool check_url_parameter(char* );
+  bool CGIentry();
+  char m_cgi_address[2048];
+
 
   //io
   struct iovec m_iv[2];
   int m_iv_count;
 
 
-  // 映射内存
-  char* file_address = NULL;
-  void unmap();
 
   // 相应处理
  
