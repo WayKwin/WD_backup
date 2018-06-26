@@ -68,17 +68,41 @@
   #}' data.txt
 
   #awk 数组下标可以是字符串(hash)
- awk '
- {
-  for(i=1; i<=NF;++i) {
-     ++array[$i]
-    }
-   }END{
-   for(i in array){
-     print i"\t" array[i]
- }
- }
-  ' world.txt
+ #awk '
+ #{
+  #for(i=1; i<=NF;++i) {
+     #++array[$i]
+    #}
+   #}END{
+   #for(i in array){
+     #print i"\t" array[i]
+ #}
+ #}
+  #' world.txt
+  ######################################
+## shell变量
+#read myint
+##变量属性为右值才要加上$
+#((myint+=1))
+#echo $myint
+#str1=hello
+#str2=world
+## 变量的拼接
+#echo $str1$str2"123"
+## ""和''区别
+#str1=hello
+#str2=world
+#echo "$str1$str2"
+#echo '$str1%str2'
+## 获取字符串长度
+#echo ${#str1} # 注意必须大括号
+## 截取字串
+#echo ${str1:1:2} # 左闭右闭下标从0开始
+##命令替换
+data=`date +%Y:%m:%d`
+echo $data
+
+
 
 
 

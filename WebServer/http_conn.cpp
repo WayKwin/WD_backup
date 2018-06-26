@@ -415,6 +415,10 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
     {
       return FORBIDDEN_REQUEST; 
     }
+    if(m_file_stat.st_mode & S_IFDIR)
+    {
+      return FORBIDDEN_REQUEST; 
+    }
     int fd = open(m_request_file,O_RDONLY); 
     m_file_address = (char*)mmap(0, m_file_stat.st_size,PROT_READ,MAP_PRIVATE,fd,0);
   close(fd);
