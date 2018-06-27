@@ -672,7 +672,6 @@ bool HttpConnec::write_respone(HTTP_CODE ret)
            m_iv[1] .iov_base = m_cgi_address;
            printf("father get respone: %s\n",m_cgi_address);
            m_iv[1] .iov_len= strlen(m_cgi_address);
-           printf("%s\n",m_cgi_address);
            printf("=========================\n");
          }
          else 

@@ -40,6 +40,7 @@ void test_strpbrk()
   char text[1024] = "GET /usr/lcoal.jpg http/1.1";
 
   // 坑: strtok虽然方便, 但是内部用了静态变量,不适合多线程版
+  // bug strtok_r 是线程安全版本的
 
   //char* method =  strtok(text," ");
   //char* url =  strtok(NULL," ");
