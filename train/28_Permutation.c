@@ -7,7 +7,9 @@ void Swap(char* a, char*b)
     return;
   }
   else 
-    printf("不同交换\n");
+  {
+    printf("不同交换,[%c,%c]\n",*a,*b);
+  }
   char tmp = *a;
   *a = *b;
   *b = tmp;
@@ -37,6 +39,7 @@ void Permutation(char* str)
     _Permutation(str,str);
     printf("the last str: %s\n",str);
 }
+
 int main()
 {
   char str[] = "ABC";
