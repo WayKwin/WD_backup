@@ -1,11 +1,11 @@
 #include<iostream>
-#include<map>
+#include<unordered_map>
 #include<vector>
 using namespace::std;
 
 char fristNotReaptingChar(string& str)
 {
-  map<char,int> CharCount;
+  unordered_map<char,int> CharCount;
   auto i =  str.begin();
   for(; i != str.end(); i++)
   {
@@ -23,6 +23,6 @@ char fristNotReaptingChar(string& str)
 }
 int main()
 {
-  string str = "aaabbc";
+  string str = "iaiaacbbc";
   cout << fristNotReaptingChar(str) <<endl;
 }
