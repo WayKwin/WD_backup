@@ -10,6 +10,10 @@ struct HuffmanTreeNode
   HuffmanTreeNode<T>* _left;
   HuffmanTreeNode<T>* _right;
   HuffmanTreeNode(T _w):_w(_w) , _left(NULL),_right(NULL){};
+  bool operator>(HuffmanTreeNode<T>* node)
+  {
+    return this->_w > node->_w;
+  }
 };
 template<typename W>
     //内部类 class 修饰,外部不能访问内部 相当于一个private  的变量
@@ -27,30 +31,29 @@ class HuffmanTree
   HuffmanTree():_root(NULL){};
   HuffmanTree(std::vector<W> &weight_vec,const W& invalid)
   {
-    std::priority_queue<Node*,std::vector<Node*>,cmp_small> min_heap; 
-    
+    //std::priority_queue<Node*,std::vector<Node*>,std::greater<Node*> > min_heap; 
+    std::priority_queue<Node*,std::vector<Node*>,cmp_small > min_heap; 
     //建立小根堆
     for(size_t i = 0; i < weight_vec.size(); i ++)
     {
       if(weight_vec[i] != invalid)
       {
 #ifdef __DEBUG__
-        std::cout<<'['<< weight_vec[i]._ch << '|' <<  weight_vec[i]._count << ']' << ' ';
+        //std::cout<<'['<< weight_vec[i]._ch << '|' <<  weight_vec[i]._count << ']' << ' ';
 #endif
         min_heap.push(new Node(weight_vec[i]));
       }
     }
-
-#ifdef __DEBUG__
-    std::cout<< min_heap.top()->_w._count;
-#endif
+//#ifdef __DEBUG__
+    //std::cout<< "heap_top:" << min_heap.top()->_w._count;
+//#endif
 
     // >1 最后一个循环是 两个节点 分别是left和right  然后建立了parent(root) 
     while(min_heap.size() > 1)
     {
-#ifdef __DEBUG__
-        std::cout<< min_heap.top()->_w._count;
-#endif
+//#ifdef __DEBUG__
+        //std::cout<< min_heap.top()->_w._count;
+//#endif
       Node* left = min_heap.top();
       min_heap.pop();
       Node* right = min_heap.top();
@@ -63,7 +66,8 @@ class HuffmanTree
     // 根节点
     _root = min_heap.top();
 #ifdef __DEBUG__
-    std::cout << "root:" <<  _root->_w._count << std::endl;
+  DisplayTree(_root);
+  std::cout << std::endl;
 #endif
     min_heap.pop();
 
@@ -72,6 +76,7 @@ class HuffmanTree
   {
     // 通过W 权值构建Node 的 优先队列( 因为Node 和Node 要组成huffman 树)
     std::priority_queue<Node*,std::vector<Node*>,std::greater<Node*> > min_heap; 
+    //std::priority_queue<Node*,std::vector<Node*>,std::greater<Node*> > min_heap; 
     
     //建立小根堆
     for(size_t i = 0; i < weight_vec.size(); i ++)
@@ -95,7 +100,16 @@ class HuffmanTree
     _root = min_heap.top();
     min_heap.pop();
   }
-  public:
+  private:
+  void DisplayTree(Node* _root)
+{
+  if(_root == NULL)
+      return;
+  //if(_root->_left == NULL && _root->_right == NULL)
+  std::cout << _root->_w._count << " ";
+  DisplayTree(_root->_left);
+  DisplayTree(_root->_right);
+}
 
   Node* _root;
 };

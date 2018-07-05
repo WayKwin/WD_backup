@@ -49,9 +49,11 @@ class FileCompress
       while(read(_sock,&c,1) > 0)
       {
 #ifdef __DEBUG__
-        std::cout<< '[' << (int)c << ']';
-        std::cout<< std::endl;
+        //std::cout<< '[' << (int)c << ']';
+        //std::cout<< std::endl;
 #endif
+        if(c == '\n')
+          continue;
         _CharInfo[c]._ch = c;
         _CharInfo[c]._count++;           
       }

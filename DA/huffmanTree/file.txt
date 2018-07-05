@@ -1,9 +1,1 @@
-aaaaaaaaa
-bbbbbbbb
-ccccccc
-dddddd
-eeeee
-rrrr
-ttt
-yy
-
+aaaabbbccd
