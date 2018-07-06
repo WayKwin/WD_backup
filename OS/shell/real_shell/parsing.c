@@ -101,7 +101,8 @@ int parsing(char** parameters,int parse_num, struct parse_info* info)
 #ifdef DEBUG_PARSING
     struct parse_info info;
     char buff[256];
-    char* command[100];
+    /*char* command[100];*/
+    char command[100];
     char* parameters[100];
 int main()
 {

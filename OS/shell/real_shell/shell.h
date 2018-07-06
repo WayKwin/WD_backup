@@ -9,9 +9,12 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+//这里应该用const  enum代替
 #define MAX_PROMPT 1024
 #define MAXLINE 4096
-#define MAXARG 20
+#define COMMAND_LENGTH 100 
+#define MAX_EVER_ARG 20
+#define MAXPIPE 20
 //要先声明 这个结构体否则报警告
 struct parse_info;
 //获取 [@] 主机名和用户名
@@ -21,13 +24,16 @@ char promopt[256];
 //输入型参数
 void  type_prompt(char* prompt);
 //此处应该统计command和parameters (命令)个数
-int read_command(char** command, char** parameters, char *prompt);
+//int read_command(char** command, char** parameters, char *prompt);
+int read_command(char **command, char* parameters[], char *prompt);
 //翻译
 int parsing(char** parameters,int parse_num,struct parse_info* info);
 //存入用户输入的指令
 char buf[256];
 //内建命令
 int builtin_command(char* command,char** parameters);
+//以管道为分隔符的基本命令
+char* pipe_base_parameters[MAXPIPE];
 //运行process
 void proc();
 //捕获信号

@@ -1,5 +1,5 @@
 .PHONEY:clean
-Data:unitTest.cpp Data.cpp
+Data:Data.cpp unitTest.cpp 
 	clang++ $^ -o $@ -std=c++11
 clean:
 	rm -rf Data

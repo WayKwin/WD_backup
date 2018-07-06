@@ -29,10 +29,10 @@ int main()
         {
             flag[j] = 0;
         }
-        while( flag[last] == 0 )
-        {
-            last --;
-        }
+        /*while( flag[last] == 0 )*/
+        /*{*/
+            /*last --;*/
+        /*}*/
         /*rang = last;*/
         /*while(flag[j] == 0) {*/
             /*j--;*/

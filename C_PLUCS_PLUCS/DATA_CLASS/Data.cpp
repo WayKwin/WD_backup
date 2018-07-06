@@ -1,4 +1,25 @@
 #include"Data.h"
+const int Data::leap_year[] = {0,31,29,31,30,31,30,31,31,30,31,30,31};
+const int Data::normal_year[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+bool Data::IsLeap( const int _year)
+{
+  if(( _year %400 == 0 && _year %100 != 0 )|| _year %400 == 0)
+  {
+    return true;
+  }
+  return false;
+}
+int Data::_GetDayByMonth(const int year,const int month)
+{
+  if(month == 2)
+  {
+    if(IsLeap(year))
+    {
+      return leap_year[month];
+    }
+  }
+  return normal_year[month];
+}
 Data::Data(int year, int month = 1,int day = 1)
   {
     if(year < 0 || month < 1 || month > 12|| day < 0)
@@ -7,7 +28,7 @@ Data::Data(int year, int month = 1,int day = 1)
     }
     _year = year;
     _month = month;
-    if(IsLeap())
+    if(IsLeap(_year))
     {
       if (day > leap_year[month])
       {
@@ -23,24 +44,12 @@ Data::Data(int year, int month = 1,int day = 1)
     }
     _day = day;
   }
-Data :: Data(const Data& rhs)
-    {
-        _year = rhs._year;
-        _month = rhs._month;
-        _day = rhs._day;
-    }
-bool Data::IsLeap()
-{
-  if(( _year %400 == 0 && _year %100 != 0 )|| _year %400 == 0)
+Data::Data(const Data& rhs)
   {
-    return true;
+      _year = rhs._year;
+      _month = rhs._month;
+      _day = rhs._day;
   }
-  return false;
-}
-int Data::_GetDayByMonth(int year,int month)
-{
-  if(IsLeap()) 
-}
 //前置++ 无参数,后置++有参数 (区分方法)
 Data& Data::operator++()
 {
@@ -65,9 +74,12 @@ int  Data::operator-(const Data & data) const
   {
     Data tmp = future;
     future = ago;
-    ago = future;
+    ago = tmp;
     flag = -1;
+    //std::cout<< "yes";
   }
+  //future.Display();
+  //ago.Display();
   while(ago != future)
   {
     ++day;
@@ -87,7 +99,7 @@ Data& Data::operator=(const Data & data)
 }
 bool Data::operator== (const Data & data) const
 {
-  return _year == data._year && _month == data._year && _day == data._day;
+  return _year == data._year && _month == data._month && _day == data._day;
 }
 bool Data::operator!= (const Data & data) const
 {
@@ -112,16 +124,26 @@ bool Data::operator >= (const Data& data) const
 }
 Data& Data::operator+=(const int& day) 
 {
-  _day += day;
-  while(_day > _GetDayByMonth(_year,_month))
+  if(day  < 0)
   {
-    // 减去 这个月的天数就是这个月多出来的天数
-    _day -= _GetDayByMonth(_year,_month);
-    _month++;
-    if(_month == 12)
+    //BUG
+    //_day -= (-day);
+    *this -= (-day);
+  }
+  else 
+  {
+    _day += day;
+    while(_day > _GetDayByMonth(_year,_month))
     {
-      _month = 1;
-      _year++;
+      // 减去 这个月的天数就是这个月多出来的天数
+      _day -= _GetDayByMonth(_year,_month);
+      if(_month == 12)
+      {
+        _month = 1;
+        _year++;
+      }
+      else 
+        _month++;
     }
   }
   return *this;
@@ -130,10 +152,10 @@ Data Data::operator+(const int& day)  const
 {
   //这是新创建了一个临时变量来 进行 -= 所以不会修改*this const ok
   Data ret (*this);
-  if(day < 0)
-    // day 小于零 在+= 中  的_day 不可能 > 这个月的总天数(31 + -1)没问题 但是(31 - 66) 不会进入while循环
-    ret -=  (-day);
-  else 
+  //if(day < 0)
+    //// day 小于零 在+= 中  的_day 不可能 > 这个月的总天数(31 + -1)没问题 但是(31 - 66) 不会进入while循环
+    //ret -=  (-day);
+  //else 
   ret += day;
   return ret;
 }
@@ -145,21 +167,28 @@ Data Data::operator- (const int& day) const
   //ret._day -= day; 已经重载了 对象的 减法 ,不能用成员变量天数来减
   
 // ( 31 - (-100)  )   -=不会进入下面那个while循环
-  if(day < 0 )
-    ret += (-day);
-  else 
+  //if(day < 0 )
+    //ret += (-day);
+  //else 
   ret -= day;
   return ret;
 }
 
 Data& Data::operator-=(const int& day)
 {
-  _day -= day;
-  //坑 bug  会出现 2015 1 0 
-  //while(_day < 0)
-  while(_day < 1)
+  if( day <  0)
   {
-
+    //BUg
+    //_day += (_day);
+    *this += (-day);
+  }
+  else 
+  {
+    _day -= day;
+    //坑 bug  会出现 2015 1 0 
+    //while(_day < 0)
+    while(_day < 1)
+    {
       _month--;
       if(_month < 1)
       {
@@ -167,13 +196,24 @@ Data& Data::operator-=(const int& day)
         _year--;
         if(_year < 0)
           throw " out of range ";
-          ;
+        ;
       }
       _day += _GetDayByMonth(_year,_month);
+    }
   }
   return *this;
 }
 void Data::Display() const
 {
   std::cout << _year << '-' <<  _month << '-' << _day << std::endl;
+}
+std::istream& operator>>(std::istream& in,Data& data)
+{
+  in >> data._year >>data._day>>data._month >>data._day;
+  return in;
+}
+std::ostream& operator<<(std::ostream& out,Data const& data)
+{
+  out  << data._year <<data._day<<data._month <<data._day;
+  return out;
 }

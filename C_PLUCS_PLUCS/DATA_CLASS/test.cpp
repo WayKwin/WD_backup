@@ -3,7 +3,7 @@ class A
   public:
   void fun(const A& a)
   {
-    a.fun2(*this);
+    //a.fun2(*this);
   }
   void fun2(const A& a)
   {
