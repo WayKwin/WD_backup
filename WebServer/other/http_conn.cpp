@@ -13,18 +13,14 @@
  * 
  * 
  * /
-*debug 2
+/*debug 2
  * 在realse版本中,我知道是需要用非阻塞读取
  * 但是在debug中我忘记将sock设置为非阻塞模式
  * 所以现象是服务器已经将数据发送给客户端,
  * 但在浏览器未接收到任何数据
  * 
  */
-/*debug 3
- * 主状态机: 在parse_line() = line_ok (遇到空行的时候就认为读取完毕)
- * 这样在post中就读不到正文 很早就找到问题所在,但是解决问题花费了很长时间
- * 
- *
+/*
  * 现象表明http在解析htlm文档的时候会将所需资源再次发起http请求
  * 
  * 
@@ -217,9 +213,7 @@ HttpConnec::HTTP_CODE HttpConnec::parse_request()
   char* text = 0;
   printf("====================\n");
   printf("以下是HTTP请求\n");
-
-  //DEBUG 没有第一个 && 会读不到正文
-  while( ( (m_parse_status == PARSE_CONTENT)) ||( line_status = parse_line())== LINE_OK)
+  while(if(m_start_l)( line_status = parse_line())== LINE_OK)
   {
     text = getline();
     m_start_line = m_handled_idx;
@@ -240,10 +234,12 @@ HttpConnec::HTTP_CODE HttpConnec::parse_request()
           ret = parse_header(text);
           if(ret == OK_REQUEST)
           {
+            printf("okokok\n");
             return OK_REQUEST;
           }
           break;
       case PARSE_CONTENT:
+          printf("==========================================================\n");
           ret = parse_content(text);
           if(ret == OK_REQUEST)
             return OK_REQUEST;
@@ -321,7 +317,6 @@ HttpConnec::HTTP_CODE HttpConnec::parse_header(char* text)
     {
       printf("m_content_length != 0\n");
       m_parse_status = PARSE_CONTENT;
-
       return LOCAL_REQUEST;
     }
     //POST但是没有正文,出错
@@ -354,13 +349,9 @@ HttpConnec::HTTP_CODE HttpConnec::parse_header(char* text)
 HttpConnec::HTTP_CODE HttpConnec::parse_content(char* text)
 {
   //CGI TODO
-  //printf("im in parse_content\n");
-  if(m_read_indx >=(m_content_length+ m_handled_idx))
-  {
-    text[m_content_length] = '\0';
-  }
+  printf("im in parse_content\n");
   m_content = text;
-  //printf("i got content%s\n",text);
+  printf("i got content%s\n",text);
   return OK_REQUEST;
 }
 HttpConnec::HTTP_CODE HttpConnec::request_check()
@@ -416,7 +407,6 @@ HttpConnec::HTTP_CODE HttpConnec::do_request()
       bool ret = CGIentry(); 
       if(!ret)
       {
-        printf("CGIentry 错误\n");
         return BAD_REQUEST;
       }
       return OK_REQUEST;
@@ -450,24 +440,15 @@ bool HttpConnec::PHPentry()
 }
 bool HttpConnec::CGIentry()
 {
-  setenv("METHOD",m_method == POST? "POST":"GET",0);
-  if(m_method == GET)
+  if(m_cgi_parameter == NULL)
+    return false;
+  if(m_method != POST && m_method != GET)
   {
-    //无参GET
-    if(m_cgi_parameter == NULL)
-    {
-      printf("m_cgi_parameter == NULL\n");
-      return false;
-    }
-    //TODO  支持其他方法 
-    if(m_method != POST && m_method != GET)
-    {
-      return false;
-    }
-    // 需要运行的的CGI在 url中
-    setenv("QUERY_STRING",m_cgi_parameter,0);
+    return false;
   }
-
+  // 需要运行的的CGI在 url中
+  setenv("QUERY_STRING",m_cgi_parameter,0);
+  setenv("METHOD",m_method == POST? "POST":"GET",0);
   
   
   int sockfd[2];
@@ -494,7 +475,7 @@ bool HttpConnec::CGIentry()
     close(sockfd[1]);
     if(m_method == POST)
     {
-      printf("In POST,send to CGI %s\n",m_content);
+      printf("In POST\n");
       send(sockfd[0],m_content,m_content_length,0);
     }
     int ret = recv(sockfd[0],m_cgi_address,sizeof(m_cgi_address),0);
@@ -567,8 +548,7 @@ bool HttpConnec::add_status_line( HTTP_CODE status)
 void HttpConnec::add_headers(int content_len)
 {
  add_content_length(content_len) ;
- add_content_type();
- add_linger();  
+ add_linger(); 
  add_blank_line();
  //这里之前是返回值bool 但没有返回值 会出现 非法指令错误
 }
@@ -579,10 +559,6 @@ bool HttpConnec::add_content_length(int content_len)
 bool HttpConnec::add_linger()
 {
   return add_response("Connection: %s\r\n",(m_linger == true)? "keep-alive" : "close");
-}
-bool HttpConnec::add_content_type()
-{
-  return add_response("Content-Type: %s\r\n","text/html;charset:utf-8");
 }
 
 bool HttpConnec::add_blank_line()

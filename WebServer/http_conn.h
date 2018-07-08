@@ -120,7 +120,9 @@ class HttpConnec
   char* m_cgi_parameter=NULL;
   bool check_url_parameter(char* );
   bool CGIentry();
+  bool PHPentry();
   char m_cgi_address[2048];
+  
 
 
   //io
@@ -133,8 +135,9 @@ class HttpConnec
  
   bool  add_response(const char* format, ...);
   bool  add_status_line(HTTP_CODE status);
-  void   add_headers(int content_len);
+  void  add_headers(int content_len);
   bool  add_content_length(int content_len); 
+  bool  add_content_type();
   bool  add_linger();
   bool  add_blank_line();
   // 在403 404 的时候用到
