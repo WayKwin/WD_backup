@@ -13,6 +13,7 @@
 #include"http_conn.h"
 #include "threadpool.cpp"
 #include"locker.h"
+//#include"log.h"
 
 #define PORT 8080
 #define MAX_FD 1024
@@ -55,14 +56,17 @@ void addsig(int sig,void(handler)(int),bool restart = true)
     sa.sa_flags |= SA_RESTART;
   }
   sigfillset(&sa.sa_mask);
+  //LogError("sigfillset");
+
   assert(sigaction(sig,&sa,NULL) != -1);
 }
 
 int main()
 {
   addsig(SIGPIPE,SIG_IGN);
-  ThreadPool< HttpConnec>* tp
+  ThreadPool<HttpConnec>* tp
     =  new ThreadPool<HttpConnec>; 
+
   int epollfd = epoll_create(5);
   assert(epollfd > 0);
   HttpConnec::m_epollfd = epollfd;
@@ -70,8 +74,13 @@ int main()
   struct epoll_event evs [MAX_EVENT_NUMBER];
   HttpConnec* usrs = new HttpConnec[MAX_FD];
 
-
+  if(usrs == NULL)
+  {
+    //LogError("memory full");
+  }
   assert(usrs);
+
+
   int listen_sock = startup(); 
   addfd(epollfd,listen_sock,false);
 
@@ -82,7 +91,7 @@ int main()
       // errno == EINTR 表示被中断而不是出错
       if(number < 0 && errno != EINTR)
       {
-          printf("epoll wait failure\n");
+          //LogInfo("epoll wait failure");
           break;
       }
       int i = 0;
@@ -98,7 +107,7 @@ int main()
           assert(clinet_sock>= 0);
           if(HttpConnec::m_user_count >= MAX_FD)
           {
-            printf(" Server Busy\n");
+            //LogWarning("service busying");
             continue;
           }
 

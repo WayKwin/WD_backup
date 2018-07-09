@@ -42,7 +42,7 @@ struct CharInfo
   typedef HuffmanTreeNode<CharInfo> Node;
   public:
     enum e_method {zip,unzip};
-    FileCompress(const char* file,e_method method=unzip) :tree(NULL),_read_sock(0)
+    FileCompress(const char* file,e_method method=unzip) :tree(NULL),_read_fd(0)
     {
         ReadFile(file);
         _src_file = file;
@@ -56,9 +56,9 @@ struct CharInfo
     }
     ~FileCompress()
     {
-      if(_read_sock >0)
+      if(_read_fd >0)
       {
-        close(_read_sock);
+        close(_read_fd);
       }
       if(tree != NULL)
         delete tree;
@@ -67,8 +67,8 @@ struct CharInfo
     void ReadFile(const char*file);
     void GenerateHuffmanCode(Node* root,std::string& code);
     void DisplayHuffmanCode();
-      bool Compress();
-      bool Uncompress(const char* );
+    bool Compress();
+    bool Uncompress(const char* );
     std::string _src_file;
     std::string _dst_file;
     //类中包含vector 要在其他地方声明大小
@@ -76,8 +76,8 @@ struct CharInfo
     HuffmanTree<CharInfo>* tree;
     //前向定义的结构体还不知道类中构造函数只能定义为指针引用
     struct CharInfo _Invalid;
-    int _read_sock;
-    int _write_sock;
+    int _read_fd;
+    int _write_fd;
     int _padding_char_pos;
   
 };
@@ -93,20 +93,15 @@ bool FileCompress::Uncompress(const char* file_name)
     exit(1);
   }
 
-  close(_read_sock);
-  _read_sock = open(_src_file.c_str(),O_RDONLY);
+  close(_read_fd);
+  _read_fd = open(_src_file.c_str(),O_RDONLY);
   std::cout<<_src_file << std::endl;
-  char c ;
-  while(read(_read_sock,&c,1) > 0)
-  {
-    std::cout << c;
-  }
-  exit(1);
 
   _src_file.replace(pos,std::string::npos,".unyasuo");
   
-    close(_write_sock);
-   _write_sock = open(_src_file.c_str(),O_WRONLY|O_CREAT);
+  //关闭之前打印的文件时
+    close(_write_fd);
+   _write_fd = open(_src_file.c_str(),O_WRONLY|O_CREAT);
    //std::cout<<_src_file <<std::endl;
    
 
@@ -118,7 +113,7 @@ bool FileCompress::Uncompress(const char* file_name)
     size_t count = 0;
     while(count != root->_w._count)
     {
-      write(_write_sock,&root->_w._ch,1);
+      write(_write_fd,&root->_w._ch,1);
     }
   }
   else 
@@ -127,37 +122,75 @@ bool FileCompress::Uncompress(const char* file_name)
     char c = 0;
     pos = 0;
     int write_end_pos  = 8;
-      while(read(_read_sock,&c,1) > 0)
+    while(read(_read_fd,&c,1) > 0)
+    {
+      // 单独处理最后一个字符
+      //if(recv(_read_fd,&c,1,MSG_PEEK) < 0)
+      //{
+        //write_end_pos = _padding_char_pos != 0? _padding_char_pos: write_end_pos;
+      //}
+      for(int i = 0; i < write_end_pos; i++)
       {
-          printf("%c\n",c);
-        //std::cout<<'[' <<c<<']';
-        //单独处理最后一个字符
-        //if(recv(_read_sock,&c,1,MSG_PEEK) < 0)
-        //{
-          //write_end_pos = _padding_char_pos != 0? _padding_char_pos: write_end_pos;
-        //}
-        for(int i = 0; i < write_end_pos; i++)
+        if( (c&(1 << i) )==  0)
         {
-          if( (c&(1 << i) )==  0)
-          {
-            //std::cout << 0 << " ";
-            cur = cur ->_left;
-          }
-          else 
-          {
-            //std::cout << 1 << " ";
-            cur = cur ->_right;
-          }
-          if(cur->_left == NULL && cur->_right == NULL)
-          {
-            //std::cout << "asddas"<<std::endl;
-            //std::cout<<cur->_w._ch;
-            //printf("%c\n",cur->_w._ch);
-            write(_write_sock,&cur->_w._ch,1);
-            cur = root;
-          }
+          //std::cout << 0 << " ";
+          cur = cur ->_left;
+        }
+        else 
+        {
+          //std::cout << 1 << " ";
+          cur = cur ->_right;
+        }
+        if(cur->_left == NULL && cur->_right == NULL)
+        {
+          //std::cout << "asddas"<<std::endl;
+          //std::cout<<cur->_w._ch;
+          printf("%c ",cur->_w._ch);
+          write(_write_fd,&cur->_w._ch,1);
+          cur = root;
         }
       }
+    }
+
+#if 0
+    lseek(_read_fd,-1,SEEK_END);
+    lseek(_write_fd,-1,SEEK_END);
+    cur = root;
+    while(read(_read_fd,&c,1) > 0)
+    {
+      // 单独处理最后一个字符
+      //if(recv(_read_fd,&c,1,MSG_PEEK) < 0)
+      //{
+        //write_end_pos = _padding_char_pos != 0? _padding_char_pos: write_end_pos;
+      //}
+      for(int i = 0; i < _padding_char_pos; i++)
+      {
+        if( (c&(1 << i) )==  0)
+        {
+          //std::cout << 0 << " ";
+          cur = cur ->_left;
+        }
+        else 
+        {
+          //std::cout << 1 << " ";
+          cur = cur ->_right;
+        }
+        if(cur->_left == NULL && cur->_right == NULL)
+        {
+          //std::cout << "asddas"<<std::endl;
+          //std::cout<<cur->_w._ch;
+          printf("%c ",cur->_w._ch);
+          write(_write_fd,&cur->_w._ch,1);
+          cur = root;
+        }
+      }
+    }
+
+#endif
+
+    
+    
+
   }
 
 
@@ -169,14 +202,14 @@ bool FileCompress::Uncompress(const char* file_name)
 bool FileCompress::Compress()
 {
   std::string outputfile = _src_file + ".yasuo";
-  _write_sock = open(outputfile.c_str(),O_WRONLY|O_CREAT|O_APPEND);
-  std::cout<<outputfile<<std::endl;
-  lseek(_read_sock,0,SEEK_SET);
+  _write_fd = open(outputfile.c_str(),O_WRONLY|O_CREAT,0777);
+  std::cout<< "_write_fd :" << outputfile<<std::endl;
+  lseek(_read_fd,0,SEEK_SET);
   char c = ' ';
   size_t pos = 0;
   size_t index = 0;
   char InputChar= 0;
-  while(read(_read_sock,&c,1) > 0)
+  while(read(_read_fd,&c,1) > 0)
   {
     if(c == ' ')
     {
@@ -201,9 +234,9 @@ bool FileCompress::Compress()
       {
         //std::cout<<(int)'a'<<std::endl;
         //std::cout << (int)InputChar << std::endl;
-        printf("%c\n",InputChar);
-
-        write(_write_sock,&InputChar,1);       
+        
+        printf("InPutchar :%c | %d\n",InputChar,InputChar);
+        write(_write_fd,&InputChar,1);       
 
         pos = 0;
       }
@@ -216,15 +249,24 @@ bool FileCompress::Compress()
     {
       InputChar |= (1<<pos++);
     }
-    //int left_pos  = 8 - pos;
-    //std::cout<< '[' << c <<']';
-    printf("%c\n",InputChar);
-    write(_write_sock,&InputChar,1);
+    printf("InputChar:%c | %d\n",InputChar,InputChar);
+    write(_write_fd,&InputChar,1);
   }
   else 
   {
     _padding_char_pos = 0;
   }
+///////////////////
+  //_read_fd = open ("./file.txt.yasuo",O_RDONLY);
+
+  //while(read(_read_fd,&c,1)> 0)
+  //{
+    //printf("c:%c | %d\n",c,c);
+      ////std::cout << '['<<c << ']' ;
+  //}
+      //exit(1);
+///////////////////
+  
   return true;
 }
 
@@ -273,23 +315,17 @@ void FileCompress::GenerateHuffmanCode(Node* root,std::string& code)
 void FileCompress::ReadFile(const char* file)
 {
       _CharInfo.resize(256);
-       _read_sock = open(file,O_RDONLY);
-      if(_read_sock < 0)
+       _read_fd = open(file,O_RDONLY);
+      if(_read_fd < 0)
       {
         //TODO
         std::cout<< " sock < 0" << std::endl;
       }
       char c = ' ';
       //_CharInfo.resize(256);
-      if(read(_read_sock,&c,1) == 0)
-      {
-          close(_read_sock);
-          std::cout << "empty file" <<std::endl;
-          exit(1);
-      }
        
-      lseek(_read_sock,0,SEEK_SET);
-      while(read(_read_sock,&c,1) > 0)
+      lseek(_read_fd,0,SEEK_SET);
+      while(read(_read_fd,&c,1) > 0)
       {
 #ifdef __DEBUG__
         //std::cout<< '[' << (int)c << ']';

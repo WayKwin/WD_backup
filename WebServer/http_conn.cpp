@@ -30,13 +30,6 @@
  * 
  * 
  * TODO
- * cgi 服务器,设想:
- * 进程池 模版参数<T,G> 对应insert和 search俩个类
- * 分别对应两个事件队列,两个信号量
- *  在append操作时,通过判断 CGI请求程序加入指定的事件队列
- *  一部分进程只能PV insert(只处理insert)
- *  另一部进程处理search
- *  (如何在两个进程之间传递文件描述符)
  * 
  */
 int HttpConnec::m_epollfd;
