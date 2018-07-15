@@ -44,6 +44,7 @@ const char* error_404_form = "The requested file was not found on this server.\n
 const char* error_500_title = "Internal Error";
 const char* error_500_form = "There was an unusual problem serving the requested file.\n";
 const char* DocRoot = "./www";
+
 void SetNonBlocking(int fd)
 {
   int old_status = fcntl(fd,F_GETFL); 
@@ -441,6 +442,10 @@ bool HttpConnec::PHPentry()
     execvp("php",argv);
     return false;
 }
+bool HttpConnec::Pythonentry()
+{
+
+}
 bool HttpConnec::CGIentry()
 {
   setenv("METHOD",m_method == POST? "POST":"GET",0);
@@ -462,7 +467,6 @@ bool HttpConnec::CGIentry()
   }
 
   
-  
   int sockfd[2];
   
   int ret = socketpair(AF_LOCAL,SOCK_STREAM,0,sockfd);
@@ -478,7 +482,9 @@ bool HttpConnec::CGIentry()
     dup2(sockfd[1],fileno(stdout));
     //支持脚本函数
     //查看m_requset_file 的后缀 区分不同脚本
+    
     return PHPentry();    
+   //SWITCH 脚本
     char* argv[] = {m_request_file,NULL};
     execvp(m_request_file,argv);
   }
