@@ -3,7 +3,7 @@ int main()
 {
     int shmid = createShm(4096);
     //
-    char* addr = shmat(shmid,NULL,0);
+    char* addr = (char*)shmat(shmid,NULL,0);
     sleep(2);
     int i = 0;
     while(i++ < 26)
