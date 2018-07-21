@@ -1,4 +1,0 @@
-[2018-07-09 12:23:02][INFO][0xb5611740][./other/testlog.cpp:5 int main()]open
-[2018-07-09 13:04:22][ERROR][0x139872224634688][main.cpp:59 void addsig(int, void (*)(int), bool)]sigfillset
-[2018-07-09 13:06:02][ERROR][0x139674541602624][main.cpp:59 void addsig(int, void (*)(int), bool)]sigfillset
-[2018-07-09 13:06:44][ERROR][0x140097023088448][main.cpp:59 void addsig(int, void (*)(int), bool)]sigfillset

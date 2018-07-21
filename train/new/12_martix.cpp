@@ -91,7 +91,7 @@ bool HasPath(const char matrix[][4],int rows,int cols,const char* msg)
 }
 int main()
 {
-  char* msg = "abc";
+  char* msg = "aeim";
   const char matrix[][4] = 
   {
     {'a','b','c','d' },
@@ -99,7 +99,7 @@ int main()
     {'i','g','k','l' },
     {'m','n','o','p' },
   };
-  bool ret = HasPath( matrix,3,4,msg);
+  bool ret = HasPath( matrix,4,4,msg);
   printf("%d",ret);
 }
 

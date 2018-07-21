@@ -2,41 +2,63 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "keymng_msg.h"
+#include "../incl/keymng_msg.h"
 
-void Msg_ResTESt()
+void Msg_ResTESt(unsigned char** pMsgKeyResData,int* iMsgKeyResDataLen)
 {
-	int ret;
-	MsgKey_Res mrs;
-	MsgKey_Res* DeMrs;
-	int				iType = 0;
-	mrs.rv = 1;
-	strcpy(mrs.clientId, "1234");
-	strcpy(mrs.serverId, "4567");
-	strcpy(mrs.r2, "90");
-	mrs.seckeyid = 12;
-	unsigned char	*myout = NULL;
-	int				myoutlen = 0;
+  int ret;
+	/*MsgKey_Res mrs;*/
+  MsgKey_Res* DeMrs = NULL;
+  int				iType = 0;
+	/*mrs.rv = 1;*/
+	/*strcpy(mrs.clientId, "1234");*/
+	/*strcpy(mrs.serverId, "4567");*/
+	/*strcpy((char*)mrs.r2,"90");*/
+	/*mrs.seckeyid = 12;*/
+	/*unsigned char	*myout = NULL;*/
+	/*int				myoutlen = 0;*/
 
-	ret = MsgEncode(&mrs, ID_MsgKey_Res, &myout, &myoutlen);
+	/*ret = MsgEncode(&mrs, ID_MsgKey_Res, &myout, &myoutlen);*/
+
+  int i = 0;
+  MsgKey_Res msgRes;
+  msgRes.rv = 0;
+    msgRes.seckeyid= 0;
+      strcpy(msgRes.clientId,"1111");
+        strcpy(msgRes.serverId,"1111");
+          printf("msgRes.clientId:%s\n",msgRes.clientId);
+            printf("msgRes.serverId:%s\n",msgRes.serverId);
+              for(i = 0; i < 1; i++)
+              {
+                    msgRes.r2[i] = 'a' + i;
+                      
+              }
+          ret = MsgEncode(&msgRes,ID_MsgKey_Res,pMsgKeyResData,iMsgKeyResDataLen);
+            printf("over MsgEncode\n");
 
 
-	if (ret != 0)
-	{
-		printf("error\n");
-	}
-	ret = MsgDecode(myout, myoutlen, &DeMrs, &iType);
+
+	/*if (ret != 0)*/
+	/*{*/
+		/*printf("error\n");*/
+	/*}*/
+  ret = MsgDecode(*pMsgKeyResData, *iMsgKeyResDataLen, (void**)&DeMrs, &iType);
+  printf("once DsgDecode\n");
+  ret = MsgDecode(*pMsgKeyResData, *iMsgKeyResDataLen, (void**)&DeMrs, &iType);
+  printf("Twice DsgDecode\n");
+  ret = MsgDecode(*pMsgKeyResData, *iMsgKeyResDataLen, (void**)&DeMrs, &iType);
+  printf("Thrid DsgDecode\n");
 
 
 
-	if (mrs.rv == DeMrs->rv &&
-		(strcmp(mrs.clientId, DeMrs->clientId) == 0)
-		&& (strcmp(mrs.serverId, DeMrs->serverId) == 0) && (strcmp(mrs.r2, DeMrs->r2) == 0))
-	{
-		printf("编码结果成功\n");
-	}
-	MsgMemFree((void **)&myout, 0); //释放内存块
-	MsgMemFree((void **)&DeMrs, ID_MsgKey_Res); //释放老师结构体
+  if (msgRes.rv == DeMrs->rv &&
+    (strcmp(msgRes.clientId, DeMrs->clientId) == 0)
+    && (strcmp(msgRes.serverId, DeMrs->serverId) == 0) && (strcmp((char*)msgRes.r2, (char*)DeMrs->r2) == 0))
+  {
+    printf("aa编码结果成功aaa\n");
+  }
+	/*MsgMemFree((void **)&myout, 0); //释放内存块*/
+	/*MsgMemFree((void **)&DeMrs, ID_MsgKey_Res); //释放老师结构体*/
 }
 
 void Msg_ReqTESt()
@@ -61,7 +83,20 @@ void Msg_ReqTESt()
 	{
 		printf("error\n");
 	}
-	ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
+  ret = MsgDecode(myout, myoutlen, &DeMrq, &iType);
+  printf("%s\n",DeMrq->clientId);
 
 
 
@@ -79,8 +114,12 @@ void Msg_ReqTESt()
 
 int main()
 {
-	Msg_ResTESt();
-	Msg_ReqTESt();
+  unsigned char* s = NULL;
+  int len = 0;
+
+	/*Msg_ResTESt(&s,&len);*/
+  Msg_ReqTESt();
+#if 0
 	int				ret = 0; //变量的本质: 
 		Teacher			t1;
 		unsigned char	*myout = NULL;
@@ -133,4 +172,5 @@ int main()
 		MsgMemFree((void **)&myout, 0); //释放内存块
 		MsgMemFree((void **)&myTeacher, ID_MsgKey_Teacher); //释放老师结构体
 	return 0;
+#endif
 }

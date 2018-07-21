@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include "keymng_msg.h"
-#include "itcastderlog.h"
-#include "itcast_asn1_der.h"
+#include "../incl/keymng_msg.h"
+#include "../incl/itcastderlog.h"
+#include "../incl/itcast_asn1_der.h"
 /*
 
 Debug   在Encode 中 将*outdata  开辟空间, 没有将 (seqence)poutdata->pDatalen 赋值给outdata
@@ -228,7 +228,7 @@ int MsgKey_ResEncode(MsgKey_Res* pStruct, ITCAST_ANYBUF** pp_outData)
 
 	}
 	ret = DER_ItAsn1_WritePrintableString(outdata, &pTmp->next);
-	if (ret != 0)
+    if (ret != 0)
 	{
 		DER_ITCAST_FreeQueue(outdata);
 		printf("%s %d error\n", __FUNCTION__, __LINE__);
@@ -236,7 +236,7 @@ int MsgKey_ResEncode(MsgKey_Res* pStruct, ITCAST_ANYBUF** pp_outData)
 
 	}
 
-	memset(outdata, 0, sizeof(outdata));
+	memset(outdata, 0, sizeof(ITCAST_ANYBUF));
 	ret = DER_ITCAST_String_To_AnyBuf(&outdata, pStruct->serverId, strlen(pStruct->serverId));
 	if (ret != 0)
 	{
@@ -256,7 +256,7 @@ int MsgKey_ResEncode(MsgKey_Res* pStruct, ITCAST_ANYBUF** pp_outData)
 
 	}
 
-	memset(outdata, 0, sizeof(outdata));
+	memset(outdata, 0, sizeof(ITCAST_ANYBUF));
 	ret = DER_ITCAST_String_To_AnyBuf(&outdata, pStruct->r2, strlen(pStruct->r2));
 	if (ret != 0)
 	{
@@ -434,7 +434,7 @@ int MsgKey_ReqEncode(MsgKey_Req* pStruct, ITCAST_ANYBUF** pp_outData)
 
 	}
 
-	memset(outdata, 0, sizeof(outdata));
+	memset(outdata, 0, sizeof(ITCAST_ANYBUF));
 	ret = DER_ITCAST_String_To_AnyBuf(&outdata, pStruct->AuthCode,
 		strlen(pStruct->AuthCode));
 	if (ret != 0)
@@ -546,8 +546,9 @@ int MsgKey_ReqDecode(unsigned char* indata, int len, MsgKey_Req** ppStruct)
 	//函数内free了
 	DER_ITCAST_FreeQueue(OutSequence);
 
-	//开辟 Res 结构体的内存开始分配
-	*ppStruct = (MsgKey_Req*)malloc(sizeof(MsgKey_Res));
+	//开辟 Req 结构体的内存开始分配
+  // BUG  !!!!!!!!!!!!!!!!!!!!!!!   Res_MsgKey_Res
+	*ppStruct = (MsgKey_Req*)malloc(sizeof(MsgKey_Req));
 	if (*ppStruct == NULL)
 	{
 		ret = KeyMng_MallocErr;
@@ -651,7 +652,6 @@ int MsgEncode(
 			printf("error MsgKey_Req\n");
 			return ret;
 		}
-		break;
 		break;
 	case ID_MsgKey_Res:
 		// pTmp 链表中间体
@@ -832,6 +832,7 @@ int MsgMemFree(void **point, int type)
 		if (*point)
 		{
 			free(*point);
+      *point = NULL;
 		}
 	}
 	else
@@ -841,11 +842,11 @@ int MsgMemFree(void **point, int type)
 		case ID_MsgKey_Teacher:
 			FreeTeacher((Teacher**)point);
 			break;
-		case ID_MsgKey_Req:
+		case ID_MsgKey_Res:
 			// TODO 两个结构体在本项目中释放过程一样
 			free_msgkey_res((MsgKey_Res**)point);
 			break;
-		case ID_MsgKey_Res:
+		case ID_MsgKey_Req:
 			free_msgkey_req((MsgKey_Req**)point);
 			break;
 		default:

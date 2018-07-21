@@ -20,7 +20,7 @@ VPATH = $(WORKDIR)/src
 
 OBJ7 = itcast_asn1_der.o  itcastderlog.o  keymng_msg.o
 
-libmymessagereal.so: $(OBJ7) 
+libmessagereal.so: $(OBJ7) 
 	$(CC) -shared -fPIC $^ -o $@ 
 	@cp $@ $(LIBDIR)
 # gcc -shared -fPIC itcast_asn1_der.o  itcastderlog.o  keymng_msg.o -o  libmymessagereal.so

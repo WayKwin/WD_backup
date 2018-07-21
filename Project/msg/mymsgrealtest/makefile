@@ -9,8 +9,8 @@ CC	= clang
 
 
 WORKDIR=.
-LIBDIR=$(HOME)/WorkSpace/Project/lib
-LIBS = -L$(LIBDIR) -lmymessagereal
+LIBDIR=/home/waykwin/WorkSpace/Project/msg/lib
+LIBS = -L$(LIBDIR) -lmessagereal
 OUTDIR=$(HOME)/bin
 
 INCLDIR=$(WORKDIR)/incl

@@ -1,58 +1,44 @@
 #include<iostream>
 using namespace::std;
-class A
+class Cat
 {
   public:
-    A()
-    {
-      printf("A constructor\n");
-    }
-    virtual void fun()
-    {
-      cout << "A :: fun()" << endl;
-    }
-    void function()
-    {
-      cout << "A :: function()" << endl;
-    }
+      Cat()
+      {
+            cout << "im cat" << endl;
+              
+      }
+        int weight = 1;
 };
-class B :public A
+class Tiger 
 {
   public:
-    B()
-    {
-      cout<< "B constructor"  << endl;
-    }
-    void fun()
-    {
-      cout << "B :: fun()" << endl;
-    }
-    void function()
-    {
-      cout << "B :: function()" << endl;
-    }
+      Tiger()
+      {
+            cout << "im cat" << endl;
+              
+      }
+        int Tiger_weight = 2;
+
 };
-class C: public B 
+//左继承 内存分布
+class LittleTiger : public Cat, public  Tiger //和mafile一样递归展开
 {
-  public:
-    C()
+public:
+  LittleTiger()
     {
-      cout<< "C constructor"  << endl;
+        cout << "im cat" << endl;
     }
-    void fun()
-    {
-      cout << "C :: fun()" << endl;
-    }
+  int Little_Tiger = 3;
 };
-
-int main()
+int main() 
 {
-
-  A* a1= new B();
-  a1->fun();
-
-  
-
-  //A a2 = B();
-  //a2.fun();
+  //更直观的写法
+  LittleTiger *p = new LittleTiger();
+  int* c = &p->weight;
+  cout << *c << endl;
+  c++;
+  cout << *c << endl;
+  c++;
+  cout << *c << endl;
 }

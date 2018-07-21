@@ -1,6 +1,19 @@
 .PHONY:clean
+WORKDIR=.
+VPATH= ./src
+CC=clang++ 
+CFLGS= -Wall -g -I$(WORKDIR)/incl/ -std=c++11 
+#LIBFLAG=.
 
-http:locker.cpp http_conn.cpp  threadpool.cpp main.cpp log.cpp
-	clang++ $^ -o $@  -g -lpthread -std=c++11
+BIN= WK_Http
+
+all:$(BIN)
+
+
+WK_Http:locker.o http_conn.o threadpool.o main.o log.o
+	$(CC) -lpthread  $^ -o $@ 
+%.o:%.c
+	$(CC) $(CFLGS) -c $< -o $@	
+
 clean:
-	rm -rf http
+	rm -rf *.o $(BIN) 
