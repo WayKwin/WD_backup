@@ -36,10 +36,60 @@
 # b = 300
 # print a ** b
 # #python内建类型 列表 (数组)
-a = [1, 2, 3, "asd"]
-print type(a)
+# a = [1, 2, 3, "asd"]
+# print type(a)
 # #元组 (类似列表,但是不支持修改)
-a = (1, 2, 3, "asd")
-print type(a)
-# #字典
+# a = (1, 2, 3, "asd")
+# print type(a)
+# # #字典
 # a = {'a': 1 ,'b': 2}
+# a = 1
+# b = 2
+# if a < b:
+    # print a
+# elif a == b:
+    # print "equals"
+# else:
+    # print "big"
+# squared = (x ** 2 for x in range(4))
+# a = [x ** 2 for x in range(100) if x % 2 == 0]
+
+# print a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

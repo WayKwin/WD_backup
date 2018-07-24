@@ -56,6 +56,7 @@ class HttpConnec
   static int m_epollfd;
   static int   m_user_count;
   private:
+  //本次使用的sock
   int m_sockfd;
   sockaddr_in m_addr;
 

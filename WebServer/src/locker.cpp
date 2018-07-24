@@ -8,7 +8,7 @@
   }
   sem::~sem() 
   {
-    if(sem_init(&s_sem,0,0) < 0)
+    if(sem_destroy(&s_sem) < 0)
     {
       throw std::exception();
     }

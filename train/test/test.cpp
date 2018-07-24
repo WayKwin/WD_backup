@@ -1,5 +1,8 @@
 #include<iostream>
 using  namespace std;
+class a
+  void static fun () {}
+};
 void test(int a, int b, int& count)
 {
   if(count == 0)

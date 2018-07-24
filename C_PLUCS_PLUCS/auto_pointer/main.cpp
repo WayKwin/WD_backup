@@ -1,0 +1,4 @@
+class auto_pointer 
+{
+  
+}

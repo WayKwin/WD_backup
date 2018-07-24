@@ -38,6 +38,7 @@ void mergeSortCore(int* src,int* help,int lo,int hi)
   //  至少有两个才能merge
   if(lo + 1 >= hi)
     return;
+
   int mid = lo + ((hi - lo) >> 1);
 
   mergeSortCore(src,help,lo,mid);

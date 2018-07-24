@@ -1,0 +1,114 @@
+
+test.o：     文件格式 elf64-x86-64
+
+Contents of section .text:
+ 0000 554889e5 5dc35548 89e55dc3 554889e5  UH..].UH..].UH..
+ 0010 c745fc01 0000005d c3                 .E.....].       
+Contents of section .comment:
+ 0000 00474343 3a202847 4e552920 342e382e  .GCC: (GNU) 4.8.
+ 0010 35203230 31353036 32332028 52656420  5 20150623 (Red 
+ 0020 48617420 342e382e 352d3136 2900      Hat 4.8.5-16).  
+Contents of section .eh_frame:
+ 0000 14000000 00000000 017a5200 01781001  .........zR..x..
+ 0010 1b0c0708 90010000 1c000000 1c000000  ................
+ 0020 00000000 06000000 00410e10 8602430d  .........A....C.
+ 0030 06410c07 08000000 1c000000 3c000000  .A..........<...
+ 0040 00000000 06000000 00410e10 8602430d  .........A....C.
+ 0050 06410c07 08000000 1c000000 5c000000  .A..........\...
+ 0060 00000000 0d000000 00410e10 8602430d  .........A....C.
+ 0070 06480c07 08000000                    .H......        
+
+Disassembly of section .text:
+
+0000000000000000 <_ZL15STATIC_FUNCTIONv>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	5d                   	pop    %rbp
+   5:	c3                   	retq   
+
+0000000000000006 <_Z8FUNCTIONv>:
+   6:	55                   	push   %rbp
+   7:	48 89 e5             	mov    %rsp,%rbp
+   a:	5d                   	pop    %rbp
+   b:	c3                   	retq   
+
+000000000000000c <_ZN1A21CLASS_STATIC_FUNCTIONEv>:
+   c:	55                   	push   %rbp
+   d:	48 89 e5             	mov    %rsp,%rbp
+  10:	c7 45 fc 01 00 00 00 	movl   $0x1,-0x4(%rbp)
+  17:	5d                   	pop    %rbp
+  18:	c3                   	retq   
+
+Disassembly of section .comment:
+
+0000000000000000 <.comment>:
+   0:	00 47 43             	add    %al,0x43(%rdi)
+   3:	43 3a 20             	rex.XB cmp (%r8),%spl
+   6:	28 47 4e             	sub    %al,0x4e(%rdi)
+   9:	55                   	push   %rbp
+   a:	29 20                	sub    %esp,(%rax)
+   c:	34 2e                	xor    $0x2e,%al
+   e:	38 2e                	cmp    %ch,(%rsi)
+  10:	35 20 32 30 31       	xor    $0x31303220,%eax
+  15:	35 30 36 32 33       	xor    $0x33323630,%eax
+  1a:	20 28                	and    %ch,(%rax)
+  1c:	52                   	push   %rdx
+  1d:	65 64 20 48 61       	gs and %cl,%fs:0x61(%rax)
+  22:	74 20                	je     44 <_ZN1A21CLASS_STATIC_FUNCTIONEv+0x38>
+  24:	34 2e                	xor    $0x2e,%al
+  26:	38 2e                	cmp    %ch,(%rsi)
+  28:	35 2d 31 36 29       	xor    $0x2936312d,%eax
+	...
+
+Disassembly of section .eh_frame:
+
+0000000000000000 <.eh_frame>:
+   0:	14 00                	adc    $0x0,%al
+   2:	00 00                	add    %al,(%rax)
+   4:	00 00                	add    %al,(%rax)
+   6:	00 00                	add    %al,(%rax)
+   8:	01 7a 52             	add    %edi,0x52(%rdx)
+   b:	00 01                	add    %al,(%rcx)
+   d:	78 10                	js     1f <.eh_frame+0x1f>
+   f:	01 1b                	add    %ebx,(%rbx)
+  11:	0c 07                	or     $0x7,%al
+  13:	08 90 01 00 00 1c    	or     %dl,0x1c000001(%rax)
+  19:	00 00                	add    %al,(%rax)
+  1b:	00 1c 00             	add    %bl,(%rax,%rax,1)
+  1e:	00 00                	add    %al,(%rax)
+  20:	00 00                	add    %al,(%rax)
+  22:	00 00                	add    %al,(%rax)
+  24:	06                   	(bad)  
+  25:	00 00                	add    %al,(%rax)
+  27:	00 00                	add    %al,(%rax)
+  29:	41 0e                	rex.B (bad) 
+  2b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  31:	41 0c 07             	rex.B or $0x7,%al
+  34:	08 00                	or     %al,(%rax)
+  36:	00 00                	add    %al,(%rax)
+  38:	1c 00                	sbb    $0x0,%al
+  3a:	00 00                	add    %al,(%rax)
+  3c:	3c 00                	cmp    $0x0,%al
+  3e:	00 00                	add    %al,(%rax)
+  40:	00 00                	add    %al,(%rax)
+  42:	00 00                	add    %al,(%rax)
+  44:	06                   	(bad)  
+  45:	00 00                	add    %al,(%rax)
+  47:	00 00                	add    %al,(%rax)
+  49:	41 0e                	rex.B (bad) 
+  4b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  51:	41 0c 07             	rex.B or $0x7,%al
+  54:	08 00                	or     %al,(%rax)
+  56:	00 00                	add    %al,(%rax)
+  58:	1c 00                	sbb    $0x0,%al
+  5a:	00 00                	add    %al,(%rax)
+  5c:	5c                   	pop    %rsp
+  5d:	00 00                	add    %al,(%rax)
+  5f:	00 00                	add    %al,(%rax)
+  61:	00 00                	add    %al,(%rax)
+  63:	00 0d 00 00 00 00    	add    %cl,0x0(%rip)        # 69 <.eh_frame+0x69>
+  69:	41 0e                	rex.B (bad) 
+  6b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  71:	48 0c 07             	rex.W or $0x7,%al
+  74:	08 00                	or     %al,(%rax)
+	...
