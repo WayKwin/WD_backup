@@ -2,6 +2,7 @@
 #include "../incl/keymnglog.h"
 #include  "../incl/keymng_msg.h"
 #include "../incl/poolsocket.h"
+#include "../incl/myipc_shm.h"
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
