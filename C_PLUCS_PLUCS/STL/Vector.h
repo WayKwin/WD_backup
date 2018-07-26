@@ -1,4 +1,5 @@
 #include<iostream>
+using namespace::std;
 template<class T>
 class Vector
 {
@@ -29,7 +30,10 @@ public:
 	}
 
 	Vector<T>& operator=(Vector<T> v)
+
 	{
+    // 交换指针, v 变成原本
+    // this 然后出了作用域析构
 		swap(_first, v._first);
 		swap(_finish, v._finish);
 		swap(_endofstorage, v._endofstorage);
