@@ -31,6 +31,7 @@ void HashInit(HashTable* ht,HashFunc hash_func)
   ht->data= (HashElem*) malloc(sizeof(size_t)* ht->capacity);
   ht->size = 0;
   ht->func = hash_func;
+  ht->Load_Factor = 0.8;
   size_t i = 0;
   for( ; i < ht->size; i++ )
   {
@@ -45,7 +46,8 @@ void HasDestory(HashTable* ht)
   ht->data = NULL;
   ht->size = 0;
   ht->func = NULL;
-  ht->Load_Factor = 0.8;
+
+  /*ht->Load_Factor = 0.8;*/
 }
 void HashInsert(HashTable* ht,HashElem elem)
 {

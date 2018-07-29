@@ -99,8 +99,8 @@
 ## 截取字串
 #echo ${str1:1:2} # 左闭右闭下标从0开始
 ##命令替换
-data=`date +%Y:%m:%d`
-echo $data
+#data=`date +%Y:%m:%d`
+#echo $data
 
 
 
