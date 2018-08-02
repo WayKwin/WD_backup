@@ -76,6 +76,7 @@ void* process(void* arg)
         ret = MngServer_Agree(&mngServerInfo,msgKeyReq,&pMsgKeyResData,&iMsgKeyResDataLen);
         break;
       case KeyMng_Check:
+        /*ret = MngServer_Check()*/
         break;
       case KeyMng_Revoke:
         break;

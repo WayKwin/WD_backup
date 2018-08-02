@@ -24,8 +24,6 @@ int main()
     {
       
       printf(" im father\n");
-      sleep(1);
-      kill(9);
     }
   }
     /*pid_t pid[3];*/

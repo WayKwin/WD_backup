@@ -59,7 +59,7 @@ int  MngServer_Agree(MngServer_Info* mngServerInfo,
     msgRes.r2[i] = 'a' + i;
   }
 
-  msgRes.seckeyid= 0;
+  msgRes.seckeyid = 0;
 
   ret = MsgEncode((void*)&msgRes,ID_MsgKey_Res,pMsgKeyResData,iMgKeyResDataLen);
 
@@ -70,6 +70,12 @@ int  MngServer_Agree(MngServer_Info* mngServerInfo,
   
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[3],0,"MngServer_Agree() END");
   return 0;
+}
+int MngServer_Check(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)
+{
+}
+int MngServer_Revoke(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)
+{
 }
 #if 0
 int MngServer_InitInfo(MngServer_Info *svrInfo)

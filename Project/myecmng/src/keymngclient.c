@@ -43,7 +43,7 @@ int main()
  memset(&MC_info,0,sizeof(MngClient_Info));
 
  //初始化
- ret  = MngClient_InitInfo(&MC_info);
+  ret  = MngClient_InitInfo(&MC_info);
   while(1)
   {
     int nSel = 0;

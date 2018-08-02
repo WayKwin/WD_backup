@@ -14,6 +14,9 @@
 #include<string.h>
 #include<stdio.h>
 #include<signal.h>
+#include<math.h>
+#include<vector>
+#include<algorithm>
 
 #define DATA_LEN 56
 
@@ -21,7 +24,10 @@ int sendnum = 0;//发送数据包编号
 int recvnum = 0;//接受数据包的编号
 char sendbuf[1024];//发送数据包
 char recvbuf[1024]; //接受数据包
-
+char dst[60];
+std::vector<float> v;
+struct timeval Begin;
+//address.dst_address.domain[1] = 0;
 //校验和的起始地址
 //len是数据大小和字节
 unsigned short chksum(unsigned short *addr,int len)
@@ -62,14 +68,17 @@ void unpack(int num,pid_t pid,struct sockaddr_in from)
 {
   struct ip *pip = (struct ip*) recvbuf;
   // 找到ip 数据(即icmp) 注意ip_hl是4倍字节数,所以得*4
-  struct icmp* picmp = (struct icmp*)(recvbuf+(pip->ip_hl << 2) );
-
   struct timeval end;
   gettimeofday(&end,NULL);
+  struct icmp* picmp = (struct icmp*)(recvbuf+(pip->ip_hl << 2) );
+
   float d = diff_time(&end,(struct timeval*)picmp->icmp_data);
-  printf("%d bytes from %s: imcp_seq=%d ttl=%d time=%.4fms\n",
-      DATA_LEN+8,inet_ntoa(from.sin_addr),ntohs(picmp->icmp_seq),pip->ip_ttl,d);
+  v.push_back(d);
+  printf("%d bytes from %s: imcp_seq=%2d ttl=%2d time=%.4fms\n",
+      DATA_LEN + 8,inet_ntoa(from.sin_addr),ntohs(picmp->icmp_seq),pip->ip_ttl,d);
+  
 }
+
 int pack(int sendnum,pid_t pid)
 {
   int len = DATA_LEN + 8;
@@ -83,13 +92,9 @@ int pack(int sendnum,pid_t pid)
   picmp->icmp_seq = htons(sendnum);
   gettimeofday((struct timeval*)(picmp->icmp_data),NULL);
 
-
   // 注意校验和一定要放在最后!!!
   picmp->icmp_cksum = chksum((unsigned short*)sendbuf,len);
 
-  //data 相对于报头偏移八个字节
-  //picmp->icmp_data = (struct timeval*)sendbuf + 8;
-  
   return len;
 
 }
@@ -107,15 +112,45 @@ void send_packet(int sfd,int pid,struct sockaddr_in* addr)
 }
 //hifen.com ping statistics ---
   //8 packets transmitted, 8 received, 0% packet loss, time 7014ms
+ // 
+ struct  packet_time_data
+{
+  packet_time_data():max(0),min(0),avg(0),mdev(0){}
+    float max; 
+    float min; 
+    float avg; 
+    float mdev; 
+
+};
 void handler_signo(int num)
 {
+  sort(v.begin(),v.end());
+  packet_time_data s;
+  s.max = *(v.end() -1);
+  s.min = *(v.begin());
+  for(auto i :v)
+  {
+    s.avg += i;
+  }
+  s.avg /= v.size();
+  for(auto i : v)
+  {
+    s.mdev = (i-s.avg) *(i-s.avg);
+  }
+  s.mdev = sqrtf(s.mdev/v.size());
   char buf[1024];
-  int icmp_times = 0;
-  int received_packets = 0;
-  int loss_pecent = 0;
-  int time = 0;
-  sprintf(buf,"--- %s ping statistics ---\n%d packets transmitted, %d received %d packet loss\
-              time %dms","baidu.com",icmp_times,received_packets,loss_pecent,time);
+  int icmp_times = sendnum;
+  int received_packets = recvnum;
+  float loss_pecent =  1 - recvnum / (sendnum) ;
+  struct timeval End;
+  gettimeofday(&End,NULL);
+
+  double time =diff_time(&End,&Begin);
+  sprintf(buf,"\n--- %s ping statistics ---\n%d packets transmitted, %d received %.1f%% packet loss,time %.fms",dst,icmp_times,received_packets,loss_pecent,time);
+  printf("%s\n",buf);
+  printf("ret min/avg/max/mdev = %.3f/%.3f/%.3f/%.3fms\n",s.min,s.avg,s.max,s.mdev);
+
+  exit(0);
 }
 void recv_packet(int sfd,int pid)
 {
@@ -130,7 +165,15 @@ void recv_packet(int sfd,int pid)
 }
 int main(int argc,char* argv[])
 {
-#if 1 
+  if(argc != 2)
+  {
+    printf("usage: %s ip_address/domain\n",argv[0]);
+    exit(1);
+  }
+
+  struct sigaction s; 
+  s.sa_handler = handler_signo;
+  sigaction(SIGINT,&s,NULL);
   struct sockaddr_in addr;
   //?这是什么
   struct hostent* phost;
@@ -145,15 +188,16 @@ int main(int argc,char* argv[])
       perror("gethostbyname:"), exit(1);
     memcpy((char*)&addr.sin_addr,(char*)phost->h_addr,phost->h_length);
   }
-    printf("ping %s(%s) %d bytes of data.\n ",argv[1],inet_ntoa(addr.sin_addr),DATA_LEN);
-
+    printf("ping %s(%s) %d bytes of data.\n",argv[1],inet_ntoa(addr.sin_addr),DATA_LEN);
+    strcpy(dst,argv[1]);
+     
     // 发送imcp报文
-    
     int sfd = socket(AF_INET,SOCK_RAW,IPPROTO_ICMP);
     if(sfd == -1)
       perror("socket"),exit(1);
     // 获取当前进程pid
     pid_t pid = getpid();
+    gettimeofday(&Begin,NULL);
     while(1)
     {
       // 包装imcp报头 
@@ -161,5 +205,4 @@ int main(int argc,char* argv[])
       recv_packet(sfd,pid);
       sleep(1);
     }
-#endif
 }

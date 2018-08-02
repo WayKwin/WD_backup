@@ -1,5 +1,5 @@
 .PHONEY: clean
 myping:ping.cpp
-	gcc $^ -o $@
+	clang++ $^ -o $@ -lm -std=c++11
 clean:
 	rm -rf myping

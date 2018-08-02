@@ -34,7 +34,7 @@ int KeyMng_ShmInit(int key, int maxnodenum, int *shmhdl);
 /*
 1 写的网点密钥时,先判断网点密钥是否存在
 	若存在则修改
-	若不存在,则在空的位置 写入网点信息
+:w
 */
 
 int KeyMng_ShmWrite(int shmhdl, int maxnodenum, NodeSHMInfo *pNodeInfo);
