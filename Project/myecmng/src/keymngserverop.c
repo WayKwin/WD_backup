@@ -8,6 +8,8 @@
 #include "../incl/keymngserverop.h"
 #include "../incl/poolsocket.h"
 #include "../incl/keymng_msg.h"
+#include "../incl/keymng_shmop.h"
+
 //TODO
 //#include "../incl/myipc_shm.h"
 //#include "keymng_shmop.h"
@@ -19,8 +21,10 @@
 //2 自身服务器网点信息,serverid 服务器端支持的最大网点
 //3  
 //初始化服务器 全局变量
+int g_keyid = 0;
 int MngServer_InitInfo(MngServer_Info *svrInfo)
 {
+  int ret;
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[1],0,"%s begin",__FUNCTION__);
   //TODO 配置文件
   strcpy(svrInfo->serverId,"123");
@@ -35,6 +39,12 @@ int MngServer_InitInfo(MngServer_Info *svrInfo)
   svrInfo->shmkey= 0x001;
   svrInfo->shmhdl = 0;
 
+  ret = KeyMng_ShmInit(svrInfo->shmkey,svrInfo->maxnode,&svrInfo->shmhdl);
+  if(ret != 0)
+  {
+    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"KeyMng_ShmInit() Error");
+    return ret;
+  }
 
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[1],0,"%s end",__FUNCTION__);
   return 0;
@@ -48,9 +58,9 @@ int  MngServer_Agree(MngServer_Info* mngServerInfo,
   int ret = 0;
   int i = 0;
   MsgKey_Res msgRes;
-
+ 
   memset(&msgRes,0,sizeof(MsgKey_Res));
-
+ // 构建应答报文
   msgRes.rv = 0;
   strcpy(msgRes.serverId,msgKeyReq->serverId);
   strcpy(msgRes.serverId,msgKeyReq->serverId);
@@ -58,95 +68,46 @@ int  MngServer_Agree(MngServer_Info* mngServerInfo,
   {
     msgRes.r2[i] = 'a' + i;
   }
-
-  msgRes.seckeyid = 0;
-
+  // 每次应答,都自增id
+  g_keyid++;
+  msgRes.seckeyid = g_keyid;
+    // 编码应答报文
   ret = MsgEncode((void*)&msgRes,ID_MsgKey_Res,pMsgKeyResData,iMgKeyResDataLen);
 
   if(ret < 0)
   {
     KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[3],0,"MsgEncode() Error");
+    goto END;
   }
-  
+  //3 协商密钥 
+  // 上面给客户端应答了之后,还要用共享内存, 写入网点信息(在数据库中)  
+  NodeSHMInfo nodeShmInfo;
+  memset(&nodeShmInfo,0,sizeof(NodeSHMInfo));
+  nodeShmInfo.status = 0;
+  // 一个网点信息包含 客户端和服务器端ID 
+  strcpy(nodeShmInfo.clientId,msgKeyReq->clientId);
+  strcpy(nodeShmInfo.serverId,mngServerInfo->serverId);
+  nodeShmInfo.seckeyid = g_keyid;//本来是数据库自增字段
+  for(i = 0; i < 64; i++)
+  {
+    // 这个网点的加密规则是 A 和 B 密码的叠加
+    nodeShmInfo.seckey[2*i] = msgKeyReq->r1[i];
+    nodeShmInfo.seckey[2*i+1] = msgRes.r2[i];
+  }
+  //写入共享内存
+  ret = KeyMng_ShmWrite(mngServerInfo->shmhdl,mngServerInfo->maxnode,&nodeShmInfo);
+  if(ret != 0)
+  {
+    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"KeyMng_ShmWrite() Error");
+    goto END;
+  }
+END:
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[3],0,"MngServer_Agree() END");
-  return 0;
+  return ret;
 }
-int MngServer_Check(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)
-{
-}
-int MngServer_Revoke(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)
-{
-}
-#if 0
-int MngServer_InitInfo(MngServer_Info *svrInfo)
-{
-	int 			ret = 0;
-	KeyMng_Log(__FILE__, __LINE__,KeyMngLevel[1], ret,"func MngServer_InitInfo() begin");
-	strcpy(svrInfo->serverId, "0001");
-	
-	strcpy(svrInfo->dbuse, "SECMNG");  //从配置文件中获取
-	strcpy(svrInfo->dbpasswd, "SECMNG");
-	strcpy(svrInfo->dbsid, "orcl");
-	svrInfo->dbpoolnum = 10;
-	
-	strcpy(svrInfo->serverip, "127.0.0.1");
-	svrInfo->serverport = 8001;
-	
-	//
-	svrInfo->maxnode = 30;
-	svrInfo->shmkey = 0x0001;
-	svrInfo->shmhdl = 0;
-	
-	
-	KeyMng_Log(__FILE__, __LINE__,KeyMngLevel[1], ret,"func MngServer_InitInfo() end");	
-	return 0;
-}
-
-
-
-//服务端 密钥协商应答流程
-//密钥协商应答流程
-/*
-1 组织应答报文 
-2 编码应答报文msgreal 
-3 协商密钥 
-4 写共享内存
-5 客户端要求: 保存数据库
-6 回复应答报文 sockieapi
-*/
-static int g_keyid = 100;
-int MngServer_Agree(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)
-{
-	int 			ret = 0, i = 0;
-	
-	MsgKey_Res			msgKeyRes; 
-	memset(&msgKeyRes, 0, sizeof(MsgKey_Res));
-	
-	KeyMng_Log(__FILE__, __LINE__,KeyMngLevel[1], ret,"func MngServer_Agree() begin");
-	
-	//1 组织应答报文
-	msgKeyRes.rv = 0;
-	strcpy(msgKeyRes.clientId, msgkeyReq->clientId);
-	strcpy(msgKeyRes.serverId, svrInfo->serverId);
-	
-	for (i=0; i<64; i++)
-	{
-		msgKeyRes.r2[i] = 'a' + i;
-	}
-	g_keyid ++;
-	msgKeyRes.seckeyid = g_keyid;
- 	
- 	//2 编码应答报文
- 	ret = MsgEncode(&msgKeyRes, ID_MsgKey_Res, outData, datalen);
- 	if (ret != 0)
- 	{
- 		KeyMng_Log(__FILE__, __LINE__,KeyMngLevel[4], ret,"func MsgEncode() end");	
- 		goto End;
- 	}
- 	
- End:
- 	
-	KeyMng_Log(__FILE__, __LINE__,KeyMngLevel[1], ret,"func MngServer_Agree() end");	
-	return ret;
-}
-#endif
+/*int MngServer_Check(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)*/
+/*{*/
+/*}*/
+/*int MngServer_Revoke(MngServer_Info *svrInfo, MsgKey_Req *msgkeyReq, unsigned char **outData, int *datalen)*/
+/*{*/
+/*}*/

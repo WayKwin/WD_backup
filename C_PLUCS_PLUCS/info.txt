@@ -1,0 +1,243 @@
+
+virtual.o：     文件格式 elf64-x86-64
+
+Contents of section .group:
+ 0000 01000000 09000000                    ........        
+Contents of section .group:
+ 0000 01000000 0b000000                    ........        
+Contents of section .group:
+ 0000 01000000 0d000000                    ........        
+Contents of section .group:
+ 0000 01000000 0f000000                    ........        
+Contents of section .text:
+ 0000 554889e5 48897de8 c745fc0a 0000005d  UH..H.}..E.....]
+ 0010 c3554889 e54883ec 10897dfc 8975f883  .UH..H....}..u..
+ 0020 7dfc0175 13817df8 ffff0000 750abf00  }..u..}.....u...
+ 0030 000000e8 00000000 c9c35548 89e5beff  ..........UH....
+ 0040 ff0000bf 01000000 e8c4ffff ff5dc3    .............]. 
+Contents of section .text._ZN13Virtual_ClassC2Ev:
+ 0000 554889e5 48897df8 488b45f8 48c70000  UH..H.}.H.E.H...
+ 0010 0000005d c3                          ...].           
+Contents of section .rodata._ZTV13Virtual_Class:
+ 0000 00000000 00000000 00000000 00000000  ................
+ 0010 00000000 00000000                    ........        
+Contents of section .rodata._ZTI13Virtual_Class:
+ 0000 00000000 00000000 00000000 00000000  ................
+Contents of section .rodata._ZTS13Virtual_Class:
+ 0000 31335669 72747561 6c5f436c 61737300  13Virtual_Class.
+Contents of section .init_array:
+ 0000 00000000 00000000                    ........        
+Contents of section .comment:
+ 0000 00474343 3a202847 4e552920 342e382e  .GCC: (GNU) 4.8.
+ 0010 35203230 31353036 32332028 52656420  5 20150623 (Red 
+ 0020 48617420 342e382e 352d3136 2900      Hat 4.8.5-16).  
+Contents of section .eh_frame:
+ 0000 14000000 00000000 017a5200 01781001  .........zR..x..
+ 0010 1b0c0708 90010000 1c000000 1c000000  ................
+ 0020 00000000 11000000 00410e10 8602430d  .........A....C.
+ 0030 064c0c07 08000000 1c000000 3c000000  .L..........<...
+ 0040 00000000 15000000 00410e10 8602430d  .........A....C.
+ 0050 06500c07 08000000 1c000000 5c000000  .P..........\...
+ 0060 00000000 29000000 00410e10 8602430d  ....)....A....C.
+ 0070 06640c07 08000000 1c000000 7c000000  .d..........|...
+ 0080 00000000 15000000 00410e10 8602430d  .........A....C.
+ 0090 06500c07 08000000                    .P......        
+
+Disassembly of section .group:
+
+0000000000000000 <_ZN13Virtual_ClassC5Ev>:
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	09 00                	or     %eax,(%rax)
+	...
+
+Disassembly of section .group:
+
+0000000000000000 <.group>:
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	0b 00                	or     (%rax),%eax
+	...
+
+Disassembly of section .group:
+
+0000000000000000 <.group>:
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	0d                   	.byte 0xd
+   5:	00 00                	add    %al,(%rax)
+	...
+
+Disassembly of section .group:
+
+0000000000000000 <.group>:
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	0f 00 00             	sldt   (%rax)
+	...
+
+Disassembly of section .text:
+
+0000000000000000 <_ZN13Virtual_Class11Virtual_funEv>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+   8:	c7 45 fc 0a 00 00 00 	movl   $0xa,-0x4(%rbp)
+   f:	5d                   	pop    %rbp
+  10:	c3                   	retq   
+
+0000000000000011 <_Z41__static_initialization_and_destruction_0ii>:
+  11:	55                   	push   %rbp
+  12:	48 89 e5             	mov    %rsp,%rbp
+  15:	48 83 ec 10          	sub    $0x10,%rsp
+  19:	89 7d fc             	mov    %edi,-0x4(%rbp)
+  1c:	89 75 f8             	mov    %esi,-0x8(%rbp)
+  1f:	83 7d fc 01          	cmpl   $0x1,-0x4(%rbp)
+  23:	75 13                	jne    38 <_Z41__static_initialization_and_destruction_0ii+0x27>
+  25:	81 7d f8 ff ff 00 00 	cmpl   $0xffff,-0x8(%rbp)
+  2c:	75 0a                	jne    38 <_Z41__static_initialization_and_destruction_0ii+0x27>
+  2e:	bf 00 00 00 00       	mov    $0x0,%edi
+  33:	e8 00 00 00 00       	callq  38 <_Z41__static_initialization_and_destruction_0ii+0x27>
+  38:	c9                   	leaveq 
+  39:	c3                   	retq   
+
+000000000000003a <_GLOBAL__sub_I__ZN13Virtual_Class11Virtual_funEv>:
+  3a:	55                   	push   %rbp
+  3b:	48 89 e5             	mov    %rsp,%rbp
+  3e:	be ff ff 00 00       	mov    $0xffff,%esi
+  43:	bf 01 00 00 00       	mov    $0x1,%edi
+  48:	e8 c4 ff ff ff       	callq  11 <_Z41__static_initialization_and_destruction_0ii>
+  4d:	5d                   	pop    %rbp
+  4e:	c3                   	retq   
+
+Disassembly of section .bss:
+
+0000000000000000 <a>:
+	...
+
+0000000000000008 <b>:
+	...
+
+Disassembly of section .text._ZN13Virtual_ClassC2Ev:
+
+0000000000000000 <_ZN13Virtual_ClassC1Ev>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+   8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+   c:	48 c7 00 00 00 00 00 	movq   $0x0,(%rax)
+  13:	5d                   	pop    %rbp
+  14:	c3                   	retq   
+
+Disassembly of section .rodata._ZTV13Virtual_Class:
+
+0000000000000000 <_ZTV13Virtual_Class>:
+	...
+
+Disassembly of section .rodata._ZTI13Virtual_Class:
+
+0000000000000000 <_ZTI13Virtual_Class>:
+	...
+
+Disassembly of section .rodata._ZTS13Virtual_Class:
+
+0000000000000000 <_ZTS13Virtual_Class>:
+   0:	31 33                	xor    %esi,(%rbx)
+   2:	56                   	push   %rsi
+   3:	69 72 74 75 61 6c 5f 	imul   $0x5f6c6175,0x74(%rdx),%esi
+   a:	43 6c                	rex.XB insb (%dx),%es:(%rdi)
+   c:	61                   	(bad)  
+   d:	73 73                	jae    82 <_GLOBAL__sub_I__ZN13Virtual_Class11Virtual_funEv+0x48>
+	...
+
+Disassembly of section .init_array:
+
+0000000000000000 <.init_array>:
+	...
+
+Disassembly of section .comment:
+
+0000000000000000 <.comment>:
+   0:	00 47 43             	add    %al,0x43(%rdi)
+   3:	43 3a 20             	rex.XB cmp (%r8),%spl
+   6:	28 47 4e             	sub    %al,0x4e(%rdi)
+   9:	55                   	push   %rbp
+   a:	29 20                	sub    %esp,(%rax)
+   c:	34 2e                	xor    $0x2e,%al
+   e:	38 2e                	cmp    %ch,(%rsi)
+  10:	35 20 32 30 31       	xor    $0x31303220,%eax
+  15:	35 30 36 32 33       	xor    $0x33323630,%eax
+  1a:	20 28                	and    %ch,(%rax)
+  1c:	52                   	push   %rdx
+  1d:	65 64 20 48 61       	gs and %cl,%fs:0x61(%rax)
+  22:	74 20                	je     44 <_GLOBAL__sub_I__ZN13Virtual_Class11Virtual_funEv+0xa>
+  24:	34 2e                	xor    $0x2e,%al
+  26:	38 2e                	cmp    %ch,(%rsi)
+  28:	35 2d 31 36 29       	xor    $0x2936312d,%eax
+	...
+
+Disassembly of section .eh_frame:
+
+0000000000000000 <.eh_frame>:
+   0:	14 00                	adc    $0x0,%al
+   2:	00 00                	add    %al,(%rax)
+   4:	00 00                	add    %al,(%rax)
+   6:	00 00                	add    %al,(%rax)
+   8:	01 7a 52             	add    %edi,0x52(%rdx)
+   b:	00 01                	add    %al,(%rcx)
+   d:	78 10                	js     1f <.eh_frame+0x1f>
+   f:	01 1b                	add    %ebx,(%rbx)
+  11:	0c 07                	or     $0x7,%al
+  13:	08 90 01 00 00 1c    	or     %dl,0x1c000001(%rax)
+  19:	00 00                	add    %al,(%rax)
+  1b:	00 1c 00             	add    %bl,(%rax,%rax,1)
+  1e:	00 00                	add    %al,(%rax)
+  20:	00 00                	add    %al,(%rax)
+  22:	00 00                	add    %al,(%rax)
+  24:	11 00                	adc    %eax,(%rax)
+  26:	00 00                	add    %al,(%rax)
+  28:	00 41 0e             	add    %al,0xe(%rcx)
+  2b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  31:	4c 0c 07             	rex.WR or $0x7,%al
+  34:	08 00                	or     %al,(%rax)
+  36:	00 00                	add    %al,(%rax)
+  38:	1c 00                	sbb    $0x0,%al
+  3a:	00 00                	add    %al,(%rax)
+  3c:	3c 00                	cmp    $0x0,%al
+  3e:	00 00                	add    %al,(%rax)
+  40:	00 00                	add    %al,(%rax)
+  42:	00 00                	add    %al,(%rax)
+  44:	15 00 00 00 00       	adc    $0x0,%eax
+  49:	41 0e                	rex.B (bad) 
+  4b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  51:	50                   	push   %rax
+  52:	0c 07                	or     $0x7,%al
+  54:	08 00                	or     %al,(%rax)
+  56:	00 00                	add    %al,(%rax)
+  58:	1c 00                	sbb    $0x0,%al
+  5a:	00 00                	add    %al,(%rax)
+  5c:	5c                   	pop    %rsp
+  5d:	00 00                	add    %al,(%rax)
+  5f:	00 00                	add    %al,(%rax)
+  61:	00 00                	add    %al,(%rax)
+  63:	00 29                	add    %ch,(%rcx)
+  65:	00 00                	add    %al,(%rax)
+  67:	00 00                	add    %al,(%rax)
+  69:	41 0e                	rex.B (bad) 
+  6b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  71:	64 0c 07             	fs or  $0x7,%al
+  74:	08 00                	or     %al,(%rax)
+  76:	00 00                	add    %al,(%rax)
+  78:	1c 00                	sbb    $0x0,%al
+  7a:	00 00                	add    %al,(%rax)
+  7c:	7c 00                	jl     7e <.eh_frame+0x7e>
+  7e:	00 00                	add    %al,(%rax)
+  80:	00 00                	add    %al,(%rax)
+  82:	00 00                	add    %al,(%rax)
+  84:	15 00 00 00 00       	adc    $0x0,%eax
+  89:	41 0e                	rex.B (bad) 
+  8b:	10 86 02 43 0d 06    	adc    %al,0x60d4302(%rsi)
+  91:	50                   	push   %rax
+  92:	0c 07                	or     $0x7,%al
+  94:	08 00                	or     %al,(%rax)
+	...

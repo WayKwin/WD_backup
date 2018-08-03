@@ -46,9 +46,9 @@ int  KeyMng_ShmInit(int key,int maxnodenum,int * shmhdl)
   else 
   {
     printf("系统监测有旧的共享内存,但打开共享内存失败\n"); 
+    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func KeyMng_ShmInit() err:");
     // 失败
   }
-
   return ret; 
 }
 int KeyMng_ShmWrite(int shmhdl, int maxnodenum, NodeSHMInfo *pNodeInfo)
@@ -67,23 +67,29 @@ int KeyMng_ShmWrite(int shmhdl, int maxnodenum, NodeSHMInfo *pNodeInfo)
 
   //获得共享内存
   ret = IPC_MapShm(shmhdl,(void**)&addr);
+  if(addr == NULL)
+  {
+    printf("addr NULL\n");
+    goto  END;
+  }
   if(ret != 0)
   {
     KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func IPC_MapShm() err:");
     goto END;
   }
-  for(i = 0; i < maxnodenum; i++)
-  {
-    CurNode = (NodeSHMInfo*)addr + i * sizeof(NodeSHMInfo);
+    for(i = 0; i < maxnodenum; i++)
+    {
+     /*printf("%d\n",maxnodenum);*/
+     CurNode = (NodeSHMInfo*)(addr + i * sizeof(NodeSHMInfo));
     if(strcmp(pNodeInfo->serverId,CurNode->clientId) == 0 &&
         strcmp(pNodeInfo->clientId,CurNode->clientId) == 0)
     {
       // 更新密钥数据
       memcpy(CurNode,pNodeInfo,sizeof(NodeSHMInfo));
-    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[2],ret,"网点密钥已经存在,已重新覆盖密钥信息");
+      KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[2],ret,"网点密钥已经存在,已重新覆盖密钥信息");
       goto END;
     }
-  }
+    }
   for(i = 0; i < maxnodenum; i++)
   {
     CurNode = (NodeSHMInfo*)addr + i*sizeof(NodeSHMInfo);
@@ -91,8 +97,8 @@ int KeyMng_ShmWrite(int shmhdl, int maxnodenum, NodeSHMInfo *pNodeInfo)
     {
       //新加入的网点信息
       memcpy(pNodeInfo,CurNode,sizeof(NodeSHMInfo));
-    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[2],ret,"插入新的网点信息\n");
-    goto END;
+      KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[2],ret,"插入新的网点信息\n");
+      goto END;
     }
   }
   if(i == maxnodenum)

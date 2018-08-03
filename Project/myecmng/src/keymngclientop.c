@@ -3,6 +3,7 @@
 #include  "../incl/keymng_msg.h"
 #include "../incl/poolsocket.h"
 #include "../incl/myipc_shm.h"
+#include"../incl/keymng_shmop.h"
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
@@ -17,6 +18,7 @@ int MngClient_InitInfo(MngClient_Info *pCltInfo)
     ret = MngClt_ParamErr;
     KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func main() MngClient_InitInfo() err (pCltInfo == NULL)");
   }
+  // 本来是要在配置文件中读取的
   strcpy(pCltInfo->clientId,"1111");
   strcpy(pCltInfo->serverId,"1111");
   strcpy(pCltInfo->AuthCode,"1111");
@@ -24,6 +26,12 @@ int MngClient_InitInfo(MngClient_Info *pCltInfo)
   pCltInfo->serverport = 8080;
   pCltInfo->maxnode = 1;
   pCltInfo->shmkey = 0x1111;
+
+  ret = KeyMng_ShmInit(pCltInfo->shmkey,pCltInfo->maxnode,&pCltInfo->shmhdl);
+  if(ret != 0)
+  {
+    return ret;
+  }
   //pCltInfo->shmkey = 0x;
   return ret;
 }
@@ -41,9 +49,9 @@ int MngClient_Agree(MngClient_Info *pCltInfo)
 
   //连接用
   char* server_ip = pCltInfo->serverip;
-  printf("server_ip:%s\n",server_ip);
+  /*printf("server_ip:%s\n",server_ip);*/
   int server_port = pCltInfo->serverport;
-  printf("server_port:%d\n",server_port);
+  /*printf("server_port:%d\n",server_port);*/
   int connfd = -1;
   int sendtime = 3;
   int connect_time = 3;
@@ -63,7 +71,7 @@ int MngClient_Agree(MngClient_Info *pCltInfo)
     msgReq.r1[i] = 'a'+i;
   }
   ret = MsgEncode((void*)&msgReq,ID_MsgKey_Req,&outData,&outLen);
-  printf("client outData:%s\n",outData);
+  /*printf("client outData:%s\n",outData);*/
   if(ret != 0)
   {
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func MngClient_Agree() MsgEncode()");
@@ -122,9 +130,29 @@ int MngClient_Agree(MngClient_Info *pCltInfo)
   else 
   {
     printf("编解码失败\n");
-  KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func MngClient_Agree() MsgDecode() DecodeError");
+    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func MngClient_Agree() MsgDecode() DecodeError");
   }
-  //
+  // 将协商内容写入共享内存
+  NodeSHMInfo nodeShmInfo;
+  nodeShmInfo.status = 0;
+  strcpy(nodeShmInfo.serverId,pCltInfo->serverId);
+  strcpy(nodeShmInfo.clientId,pCltInfo->clientId);
+  nodeShmInfo.seckeyid =msgRes->seckeyid;
+
+  // 协商密钥 abc 123 a1b2c3
+  for(i = 0; i < 64; i++)
+  {
+    nodeShmInfo.seckey[2*i] = msgReq.r1[i];
+    nodeShmInfo.seckey[2*i + 1] = msgRes->r2[i];
+  }
+
+  // 写网点密钥
+  ret = KeyMng_ShmWrite(pCltInfo->shmhdl,pCltInfo->maxnode,&nodeShmInfo);
+  if(ret != 0)
+  {
+    KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[4],ret,"func KeyMng_ShmWrite() ");
+    goto END;
+  }
 
 END:
   if(outData != NULL)
@@ -138,4 +166,8 @@ END:
   KeyMng_Log(__FILE__,__LINE__,KeyMngLevel[1],ret,"func MngClient_Agree() end ");
 
   return ret;
+}
+int MngClient_Check(MngClient_Info *pCltInfo)
+{
+
 }
